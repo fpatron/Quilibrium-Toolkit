@@ -1,0 +1,20 @@
+- name: Start Quilibrium node
+  hosts: "{{ target }}"
+
+  tasks:
+    - name: Include variables
+      include_vars: ../defaults/vars.yml
+
+    - name: Start Quilibrium node using screen
+      shell: cd {{ node_path }}/ceremonyclient/node && screen -dmS quilibrium ./node
+      register: quilibrium_start
+
+    - name: Check if node started successfully
+      when: quilibrium_start.rc == 0
+      debug:
+        msg: "Quilibrium node started successfully"
+
+    - name: Report error if node failed to start
+      when: quilibrium_start.rc != 0
+      fail:
+        msg: "Failed to start Quilibrium node. Check logs for details."

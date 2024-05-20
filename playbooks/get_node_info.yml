@@ -1,0 +1,17 @@
+- name: Quilibrium node info
+  hosts: "{{ target }}"
+
+  vars:
+    quilibrium_api_url: "http://127.0.0.1:8338"
+
+  tasks:
+    - name: Get node information from quilibrium node
+      uri:
+        url: "{{ quilibrium_api_url }}/quilibrium.node.node.pb.NodeService/GetNodeInfo"
+        method: POST
+      register: node_info
+    - name: Check if request was successful
+      when: node_info.status != 200
+      fail:
+        msg: "Failed to get node information: {{ node_info.msg }}"
+    - debug: var=node_info.json

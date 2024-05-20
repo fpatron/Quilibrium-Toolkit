@@ -1,0 +1,59 @@
+- name: Install Quilibrium node
+  hosts: "{{ target }}"
+
+  tasks:
+    - name: Include variables
+      include_vars: ../defaults/vars.yml
+
+    - name: Check if node already installed
+      stat:
+        path: "{{ node_path }}"
+      register: node_check
+
+    - name: Stop playbook if node exists (corrected)
+      fail:
+        msg: "Directory '{{ node_path }}' already exists. Playbook aborted."
+      when: node_check.stat.exists
+
+    - name: Install required packages
+      yum:
+        name:
+          - git
+          - screen
+          - wget
+          - btop
+
+    - name: Install go
+      shell: |
+        wget https://go.dev/dl/go1.20.14.linux-amd64.tar.gz
+        sudo tar -xvf go1.20.14.linux-amd64.tar.gz 
+        sudo mv go /usr/local
+        sudo rm go1.20.14.linux-amd64.tar.gz
+        echo "" >> ~/.bashrc
+        echo "GOROOT=/usr/local/go" >> ~/.bashrc
+        echo "GOPATH=$HOME/go" >> ~/.bashrc
+        echo "PATH=$GOPATH/bin:$GOROOT/bin:$PATH" >> ~/.bashrc
+        source  ~/.bashrc
+
+    - name: Install Quilibrium node (conditional)
+      shell: |
+        cd {{ node_path }}
+        git clone https://github.com/QuilibriumNetwork/ceremonyclient.git
+        cd ceremonyclient/node
+        GOEXPERIMENT=arenas go build .
+      when: not node_check.stat.exists
+
+    - name: Check if node is installed
+      stat:
+        path: "{{ node_path }}"
+      register: node_check
+
+    - name: Fail if node installation fails
+      fail:
+        msg: "Error installing Quilibrium node."
+      when: not node_check.stat.exists
+
+    - name: Success message
+      debug:
+        msg: "Quilibrium node has been successfully installed."
+      when: node_check.stat.exists
