@@ -1,6 +1,3 @@
-node_path: ~/quilibrium
-
-ansible_become: yes
-ansible_become_method: sudo
+node_path: /home/{{ ansible_user }}/quilibrium
 ansible_become_pass: '{{ ansible_password }}'
       
