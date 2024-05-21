@@ -51,9 +51,57 @@ stop_node | Stops the Quilibrium node(s) running on the target machine(s).
 restart_node | Restarts the Quilibrium node(s) on the target machine(s).
 reboot_node | Reboots the entire node machine(s).
 
-### Action ```install_node```
+### Installing a Quilibrium node ```install_node```
 
-### Action ```backup_node```
+The install_node action automates the process of setting up a new Quilibrium node on your target machine(s). Here's a detailed breakdown of what it does:
+
+#### Installation directory
+* By default, Quilibrium will be installed in the following directory:
+```
+/home/<your user>/quilibrium
+```
+
+#### Additional packages
+* The script automatically installs any necessary additional packages required for Quilibrium to run correctly.
+
+#### System configuration updates:
+* The script modifies the system configuration file ```/etc/sysctl.conf``` to include the following parameters:
+```
+net.core.rmem_max=7500000
+net.core.wmem_max=7500000
+```
+These parameters adjust the network buffer sizes to potentially improve Quilibrium's performance.
+
+#### Quilibrium configuration
+* The script set up the Quilibrium configuration file (```node/.config/config.yml```). It sets the following parameters within the configuration file:
+```
+statsMultiaddr: "/dns/stats.quilibrium.com/tcp/443"'
+listenGrpcMultiaddr: /ip4/127.0.0.1/tcp/8337
+listenRESTMultiaddr: /ip4/127.0.0.1/tcp/8338
+```
+* statsMultiaddr: this parameter defines the address where the node will send statistics.
+* listenGrpcMultiaddr and listenRESTMultiaddr: these parameters specify the IP addresses and ports on which the node listens for incoming GRPC and REST API connections, respectively.
+
+#### Automatic startup
+* The script sets up a cron job to automatically start the Quilibrium node whenever the system reboots. This ensures your node is always running unless manually stopped.
+
+#### Notes
+By using the install_node action, you can streamline the Quilibrium node installation process, saving you time and effort.
+
+### Backing up node configuration ```backup_node```
+
+The ```backup_node``` action provides a convenient way to create local backups of your Quilibrium node configuration files. This is essential for disaster recovery purposes and allows you to restore your node's settings if necessary.
+
+#### What gets backed up
+
+* The script retrieves the following critical configuration files from each target node:
+  * ```config.yml```: This file stores core configuration settings for your Quilibrium node.
+  * ```keys.yml```: This file contains sensitive security keys used by your node. 
+
+#### Backup location
+
+The script stores the backed-up files in a directory named ```./backup``` within your current working directory.
+Each node's backup files are placed in a separate subfolder named after the node's hostname, ensuring clear organization and identification.
 
 ## Examples
 
