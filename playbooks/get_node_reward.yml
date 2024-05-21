@@ -1,7 +1,11 @@
-- name: Quilibrium node info
+---
+- name: Get Quilibrium reward
   hosts: "{{ target }}"
 
   tasks:
+    - name: Include variables
+      include_vars: ../defaults/vars.yml
+
     - name: Get node information from quilibrium node
       uri:
         url: "{{ quilibrium_api_url }}/quilibrium.node.node.pb.NodeService/GetNodeInfo"
@@ -11,4 +15,12 @@
       when: node_info.status != 200
       fail:
         msg: "Failed to get node information: {{ node_info.msg }}"
-    - debug: var=node_info.json
+
+    - name: Get rewards from quilibrium website
+      command: "python3 ../scripts/rewards.py {{ node_info.json.peerId }}"
+      delegate_to: 127.0.0.1
+      register: rewards
+
+    - name: Display script output
+      debug:
+        msg: "{{ rewards.stdout_lines[-1:] }}"

@@ -27,6 +27,7 @@ You define targets in your Ansible inventory file [inventories/hosts.yml]
 install_node | Installs a new Quilibrium node on the specified target(s).
 backup_node | Backs up Quilibrium configuration files to the ./backup folder locally.
 get_node_info | Retrieves information about the Quilibrium node(s).
+get_node_reward | Retrieves rewards about the Quilibrium node(s).
 start_node | Starts the Quilibrium node(s)
 stop_node | Stops the Quilibrium node(s)
 restart_node | Restarts the Quilibrium node(s)

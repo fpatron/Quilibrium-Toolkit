@@ -10,7 +10,8 @@ VAULT_FILE="vaults/vault.yml"
 
 if [ $# -eq 0 ] || [ "$1" == "--help" ] || [ $# -ne 2 ] \
      || [ "$1" != "start_node" ] && [ "$1" != "stop_node" ] && [ "$1" != "restart_node" ] \
-     && [ "$1" != "get_node_info" ] && [ "$1" != "backup_node" ] && [ "$1" != "install_node" ] && [ "$1" != "reboot_node" ]; then
+     && [ "$1" != "get_node_info" ] && [ "$1" != "backup_node" ] && [ "$1" != "install_node" ]\
+     && [ "$1" != "reboot_node" ] && [ "$1" != "get_node_reward" ]; then
   echo "Quilibrium Runner"
   echo "------------------------"
   echo "This script simplifies the execution of Quilibrium monitoring tasks by automating the common command structure, adding basic checks for file existence, and providing detailed error messages."
@@ -24,6 +25,7 @@ if [ $# -eq 0 ] || [ "$1" == "--help" ] || [ $# -ne 2 ] \
   echo ""
   echo "**Supported Actions:**"
   echo "  - get_node_info: Return information about the Quilibrium node(s)"
+  echo "  - get_node_reward: Get rewards from node(s)"
   echo "  - start_node: Starts the Quilibrium node(s)"
   echo "  - stop_node: Stops the Quilibrium node(s)"
   echo "  - restart_node: Restarts the Quilibrium node(s)"
