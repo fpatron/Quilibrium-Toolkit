@@ -1,0 +1,40 @@
+quil_farm_01:
+  vars:
+    ansible_user: quil01
+    ansible_password: '{{ quil01_password }}'
+  hosts:
+    worker01:
+      ansible_host: 192.168.0.21
+    worker02:
+      ansible_host: 192.168.0.22
+    worker03:
+      ansible_host: 192.168.0.23
+    worker04:
+      ansible_host: 192.168.0.24
+    worker05:
+      ansible_host: 192.168.0.25
+quil_farm_02:
+  vars:
+    ansible_user: quil02
+    ansible_password: '{{ quil02_password }}'
+  hosts:
+    quilibrium01:
+      ansible_host: 192.168.0.101
+    quilibrium02:
+      ansible_host: 192.168.0.102
+    quilibrium03:
+      ansible_host: 192.168.0.103
+    quilibrium04:
+      ansible_host: 192.168.0.104
+    quilibrium05:
+      ansible_host: 192.168.0.105
+
+others:
+  vars:
+    ansible_user: other
+    ansible_password: '{{ other_password }}'
+  hosts:
+    other-01:
+      ansible_host: 192.168.0.13
+    other-02:
+      ansible_host: 192.168.0.10
