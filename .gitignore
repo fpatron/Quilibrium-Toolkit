@@ -1,2 +1,3 @@
-vaults
+inventories/hosts.yml
+vaults/vault.yml
 backup
