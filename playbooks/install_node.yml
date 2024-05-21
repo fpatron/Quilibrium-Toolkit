@@ -33,7 +33,7 @@
           - unzip
           - vim
           - nano
-          - ip-utils
+          - iputils-ping
 
     - name: Update sysctl (rmem_max)
       become: true
