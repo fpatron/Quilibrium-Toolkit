@@ -6,4 +6,5 @@
       include_vars: ../defaults/vars.yml
 
     - name: reboot
+      become: true
       reboot:
