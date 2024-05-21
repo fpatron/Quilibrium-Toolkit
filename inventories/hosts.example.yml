@@ -1,7 +1,7 @@
 quil_farm_01:
   vars:
     ansible_user: quil01
-    ansible_password: '{{ quil01_password }}'
+    ansible_password: "{{ quil01_password }}"
   hosts:
     worker01:
       ansible_host: 192.168.0.21
@@ -16,7 +16,7 @@ quil_farm_01:
 quil_farm_02:
   vars:
     ansible_user: quil02
-    ansible_password: '{{ quil02_password }}'
+    ansible_password: "{{ quil02_password }}"
   hosts:
     quilibrium01:
       ansible_host: 192.168.0.101
@@ -32,7 +32,7 @@ quil_farm_02:
 others:
   vars:
     ansible_user: other
-    ansible_password: '{{ other_password }}'
+    ansible_password: "{{ other_password }}"
   hosts:
     other-01:
       ansible_host: 192.168.0.13

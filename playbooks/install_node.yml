@@ -74,12 +74,12 @@
       replace:
         path: "{{ node_path }}/ceremonyclient/node/.config/config.yml"
         regexp: 'listenGrpcMultiaddr: ""'
-        replace: 'listenGrpcMultiaddr: /ip4/127.0.0.1/tcp/8337'
+        replace: "listenGrpcMultiaddr: /ip4/127.0.0.1/tcp/8337"
     - name: Update configuration (listenRESTMultiaddr)
       replace:
         path: "{{ node_path }}/ceremonyclient/node/.config/config.yml"
         regexp: 'listenRESTMultiaddr: ""'
-        replace: 'listenRESTMultiaddr: /ip4/127.0.0.1/tcp/8338'
+        replace: "listenRESTMultiaddr: /ip4/127.0.0.1/tcp/8338"
 
     - name: Launch Quilibrium node at reboot
       shell: (crontab -u {{ ansible_user }} -l; echo "@reboot sleep 30 && cd {{ node_path }}/ceremonyclient/node && screen -dmS quilibrium ./node") | crontab -u {{ ansible_user }} -

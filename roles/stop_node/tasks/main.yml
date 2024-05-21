@@ -11,7 +11,7 @@
   when: quilibrium_pid.stdout.strip() != ""
   shell: screen -S {{ quilibrium_pid.stdout.strip() }} -X kill
   register: quilibrium_kill
- 
+
 - name: Report error if node failed to stop
   when: quilibrium_kill.rc != 0
   fail:
