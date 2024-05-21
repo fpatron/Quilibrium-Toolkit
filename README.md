@@ -1,62 +1,79 @@
-# Quilibrium tools
+# Quilibrium Tools: Manage Your Nodes with Ease
+
+This project provides a comprehensive toolkit for simplifying the management of your Quilibrium nodes.<br/>
+With these tools, you can perform essential actions and monitor multiple nodes effortlessly, saving you valuable time and ensuring smooth operation.<br/>
+https://github.com/QuilibriumNetwork/ceremonyclient
 
 ## Overview
 
-This project provides tools for managing Quilibrium nodes (https://github.com/QuilibriumNetwork/ceremonyclient). It helps with basic actions and monitoring for multiple nodes.<br/>
-These tools are built using Ansible https://github.com/ansible/ansible.<br/>
+* **Centralized Management:** manage multiple Quilibrium nodes from a single location, eliminating the need to interact with each node individually.
+* **Simplified Actions:** perform common tasks like installation, backup, retrieval of information and rewards, starting/stopping/rebooting nodes with a single command.
+* **Flexibility:** group your nodes for targeted management or manage them all at once.
+* **Security:** leverage Ansible's robust features to manage passwords securely using Ansible Vault (explained in detail later).
+* **Built with Ansible:** This toolkit utilizes the power of Ansible, a popular open-source automation tool, for efficient node management (https://github.com/ansible/ansible).
 
-## Pre-requisites
-1. Install ansible on local system
+
+## Getting Started
+1. **Install Ansible**
 ```
 apt install ansible
 ```
-2. Install python3 on local system
+2. **Install Python 3**
 ```
 apt install python3
 ```
-3. Clone this repository.
+3. **Clone this repository:** use git to clone this repository onto your local system.
 
 ## Commands
+
+The tools are provided as a script named ```qtools.sh```. To use it, follow this syntax:
+
 ```
 ./qtools.sh <target> <action>
 ```
 
-### Targets
-Hosts defined into your Ansible inventory file [inventories/hosts.yml]<br>
-Note: By default the user to login is setup as ubuntu in group_vars/all file. If you have a specific user to be logged in with please change the username in this file or directly into the hosts.yml file (see example).
+## Explanation
 
-### Actions
+* <target>: This specifies the node(s) you want to target. It can be:
+  * ```all```: Applies the action to all nodes defined in your inventory file.
+  * A group name defined in your inventory (e.g., quilibrium).
+  * The hostname of a specific node (e.g., node01).
+* <action>: This defines the operation you want to perform on the target node(s). Available actions include:
 
 | Action | Description |
 | ---   | --- |
-install_node | Installs a new Quilibrium node on the specified target(s).
-backup_node | Backs up Quilibrium configuration files to the ./backup folder locally.
-get_node_info | Retrieves information about the Quilibrium node(s).
-get_node_reward | Retrieves rewards about the Quilibrium node(s).
-start_node | Starts the Quilibrium node(s)
-stop_node | Stops the Quilibrium node(s)
-restart_node | Restarts the Quilibrium node(s)
-reboot_node | Reboot the specified node(s)
+install_node | Installs a new Quilibrium node on the specified target(s). *
+backup_node | Creates a backup of Quilibrium configuration files on the target node(s) and saves them locally in the ```./backup``` folder. **
+get_node_info | Retrieves information about the Quilibrium node(s), such as its current max_frame, peer id...
+get_node_reward | Fetches information about the rewards earned by the Quilibrium node(s).
+start_node | Starts the Quilibrium node(s) on the target machine(s).
+stop_node | Stops the Quilibrium node(s) running on the target machine(s).
+restart_node | Restarts the Quilibrium node(s) on the target machine(s).
+reboot_node | Reboots the entire node machine(s).
 
-### Examples
+### Action ```install_node```
+
+### Action ```backup_node```
+
+## Examples
 
 To restart all your nodes
 ```
 ./qtools.sh restart_node all
 ```
-To restart nodes from the "quilibrium" group:
+To restart nodes from the "quilibrium" group defined in your inventory:
 ```
 ./qtools.sh restart_node quilibrium
 ```
-To restart a single node:
+To restart a single node name "node01":
 ```
 ./qtools.sh restart_node node01
 ```
 
-## Hosts
+## Defining Your Nodes (Inventory)
 
-Quilibrium Tools require you to define your inventory in the [inventories/hosts.yml](inventories/hosts.yml) file.<br/>
-Here's an example::<br/>
+Quilibrium Tools rely on an inventory file located at [inventories/hosts.yml](inventories/hosts.yml) to define your nodes and their details. This file serves as a blueprint for Ansible to identify and manage your nodes.<br/>
+Here's an example of a basic inventory structure:
 
 ```
 nodes:
@@ -73,37 +90,78 @@ nodes:
 ```
 or [inventories/hosts.example.yml](inventories/hosts.example.yml)
 
-* Replace <your_username> with your actual username<br/>
-* You can define multiple groups besides "nodes" to organize your nodes for specific purposes.
+* This example defines a group called "nodes" containing three individual nodes named node01, node02, and node03.
+* Each node entry specifies its hostname (ansible_host) for connection purposes.
+* The ansible_user variable defines the username used for SSH access to the nodes.
+* The ansible_password variable is crucial, but we'll address how to secure it in the next section.
 * Refer to the Ansible documentation for more information on inventories: https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html
 
-## Securing Passwords
+<br/>
+Variables are defined into the file [inventories/group_vars/all.yml](inventories/group_vars/all)
+* You can change the default user ```ansible_user``` (ubuntu by default)
+* You can change the root path of the Quilibrium node
 
-To protect your node passwords, consider using Ansible Vault to encrypt sensitive data. Here's how:<br>
+## Securing Passwords with Ansible Vault
 
-1. Create a vault file:
+Ansible Vault provides a robust solution for encrypting sensitive information like node passwords within your project. This ensures your credentials remain secure, even if your code repository is exposed. Here's a detailed guide on utilizing Ansible Vault:
+
+1. **Create a vault file:**
+* Open a terminal and navigate to your project directory.
+* Run the following command to create a new vault file named vaults/vault.yml
 ```
 ansible-vault create vaults/vault.yml
 ```
-2. Add your passwords to the vault using the edit command:
+This command initializes an empty vault file encrypted with a randomly generated key.<br/>
+
+2. **Adding Passwords to the Vault:**
+
+* Use the following command to edit the vault file:
 ```
 ansible-vault edit vaults/vault.yml
 ```
-Inside the editor, add a key-value pair like this:
+
+This will open your default text editor (usually Vim or Nano) with the vault file content.
+* Inside the editor, add your passwords as key-value pairs. For example, to store your Quilibrium node password:
+
 ```
-quilibrium_password: my secure password
+quilibrium_password: "<your_strong_password>"
 ```
-3. Update your hosts.yml file to reference the password from the vault:
+
+**Important:** replace <your_strong_password> with your password.
+
+* Save and close the editor. The passwords are now securely encrypted within the vault file.
+
+3. **Referencing Passwords from Inventory:**
+
+* Update your ```inventories/hosts.yml``` file to reference the password from the vault. Modify the ansible_password variable like this:
+
 ```
-ansible_password: '{{ quilibrium_password }}'
+nodes:
+  vars:
+    ansible_password: '{{ quilibrium_password }}'  # Reference from vault
+  hosts:
+    # ... (Your node definitions)
 ```
-4. To edit your vault file:
+
+4. **Managing the Vault File:**
+
+* To edit the vault and update passwords:
+
 ```
 ansible-vault edit vaults/vault.yml
 ```
-5. To view your vault file:
+
+* To view the contents of the vault file in a decrypted format:
+
 ```
 ansible-vault view vaults/vault.yml
 ```
-Note: The vault may use vim or nano by default for editing.
+
+## Additional Security Best Practices:
+
+* **Limit Vault Access:** Restrict access to the vault file itself. Consider storing it outside your version control system (e.g., Git) to prevent accidental exposure.
+* **Regular Password Rotation:** Implement a regular password rotation schedule for your node passwords and update them within the vault accordingly.
+* **Vault Password Management:** Choose a strong password for the vault itself and consider using a password manager to store it securely.
+
+By following these steps and best practices, you can effectively secure your node passwords within the Quilibrium Tools project, enhancing the overall security posture of your Quilibrium node management.
 
