@@ -1,0 +1,9 @@
+- name: Reboot Quilibrium node
+  hosts: "{{ target }}"
+
+  tasks:
+    - name: Include variables
+      include_vars: ../defaults/vars.yml
+
+    - name: reboot
+      reboot:

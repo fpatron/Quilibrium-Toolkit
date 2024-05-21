@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Script Name: Quilibrium Runner (qrunner.sh)
+# Script Name: Quilibrium Runner (qtools.sh)
 # Author: vodhash
 # Version: 1.0
 # Description: Automates the execution of Quilibrium monitoring tasks by simplifying commands.
@@ -10,13 +10,13 @@ VAULT_FILE="vaults/vault.yml"
 
 if [ $# -eq 0 ] || [ "$1" == "--help" ] || [ $# -ne 2 ] \
      || [ "$1" != "start_node" ] && [ "$1" != "stop_node" ] && [ "$1" != "restart_node" ] \
-     && [ "$1" != "get_node_info" ] && [ "$1" != "backup_node" ] && [ "$1" != "install_node" ]; then
+     && [ "$1" != "get_node_info" ] && [ "$1" != "backup_node" ] && [ "$1" != "install_node" ] && [ "$1" != "reboot_node" ]; then
   echo "Quilibrium Runner"
   echo "------------------------"
   echo "This script simplifies the execution of Quilibrium monitoring tasks by automating the common command structure, adding basic checks for file existence, and providing detailed error messages."
   echo ""
   echo "Usage:"
-  echo "./qrunner.sh <action> <host>"
+  echo "./qtools.sh <action> <host>"
   echo ""
   echo "Arguments:"
   echo "- <action>: The action to perform."
@@ -29,9 +29,10 @@ if [ $# -eq 0 ] || [ "$1" == "--help" ] || [ $# -ne 2 ] \
   echo "  - restart_node: Restarts the Quilibrium node(s)"
   echo "  - backup_node: RBackup Quilibrium configuration files"
   echo "  - install_node: Install a new Quilibrium node on the specified node(s)"
+  echo "  - reboot_node: Reboot the specified node(s)"
   echo ""
   echo "Example:"
-  echo "./qrunner.sh node01 start_node"
+  echo "./qtools.sh node01 start_node"
   echo ""
   echo "Requirements:"
   echo "- The script requires the following files to exist:"
@@ -57,4 +58,4 @@ if [ ! -f "$VAULT_FILE" ]; then
 fi
 
 # Execute the Ansible playbook
-ansible-playbook -i ${HOSTS_FILE} -e target=$2 -e @${VAULT_FILE} --ask-vault-pass playbooks/$1.yml
+ansible-playbook -i ${HOSTS_FILE} -e target=$2 -e @${VAULT_FILE} --ssh-common-args='-o StrictHostKeyChecking=no' --ask-vault-pass playbooks/$1.yml
