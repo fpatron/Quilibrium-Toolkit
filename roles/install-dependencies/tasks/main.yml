@@ -1,0 +1,14 @@
+- name: Install required packages
+  become: true
+  apt:
+    name:
+      - git
+      - screen
+      - wget
+      - btop
+      - cron
+      - zip
+      - unzip
+      - vim
+      - nano
+      - iputils-ping

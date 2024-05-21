@@ -2,21 +2,6 @@
   hosts: "{{ target }}"
 
   tasks:
-    - name: Find Quilibrium node process ID
-      shell: screen -ls | grep quilibrium | awk '{print $1}'
-      register: quilibrium_pid
-
-    - name: Kill Quilibrium node process
-      when: quilibrium_pid.stdout.strip() != ""
-      shell: screen -S {{ quilibrium_pid.stdout.strip() }} -X kill
-      register: quilibrium_kill
-
-    - name: Check if node stopped successfully
-      when: quilibrium_kill.rc == 0
-      debug:
-        msg: "Quilibrium node stopped successfully."
- 
-    - name: Report error if node failed to stop
-      when: quilibrium_kill.rc != 0
-      fail:
-        msg: "Failed to stop Quilibrium node. Check logs for details."
+    - name: kill node process
+      include_role:
+        name: roles/stop_node

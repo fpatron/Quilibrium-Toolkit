@@ -50,7 +50,7 @@ To restart a single node:
 
 ## Hosts
 
-Quilibrium Tools require you to define your inventory in the inventories/hosts.yml file.<br/>
+Quilibrium Tools require you to define your inventory in the [inventories/hosts.yml](inventories/hosts.yml) file.<br/>
 Here's an example::<br/>
 
 ```
@@ -66,6 +66,7 @@ nodes:
     node03:
       ansible_host: 192.168.1.3
 ```
+or [inventories/hosts.example.yml](inventories/hosts.example.yml)
 
 * Replace <your_username> with your actual username<br/>
 * You can define multiple groups besides "nodes" to organize your nodes for specific purposes.

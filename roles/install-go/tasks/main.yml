@@ -1,0 +1,15 @@
+- name: Install go
+  become: true
+  shell: |
+    wget https://go.dev/dl/go1.20.14.linux-amd64.tar.gz
+    sudo tar -xvf go1.20.14.linux-amd64.tar.gz 
+    sudo rm -rf /usr/local/go
+    sudo mv go /usr/local
+    sudo rm go1.20.14.linux-amd64.tar.gz
+
+- name: Add go to user path
+  shell: |
+    echo "" >> ~/.bashrc
+    echo "GOROOT=/usr/local/go" >> ~/.bashrc
+    echo "GOPATH=\$HOME/go" >> ~/.bashrc
+    echo "PATH=\$GOPATH/bin:\$GOROOT/bin:\$PATH" >> ~/.bashrc
