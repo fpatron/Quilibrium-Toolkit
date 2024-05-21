@@ -2,9 +2,6 @@
   hosts: "{{ target }}"
 
   tasks:
-    - name: Include variables
-      include_vars: ../defaults/vars.yml
-
     - name: Backup config.yml
       fetch:
         src: "{{ node_path }}/ceremonyclient/node/.config/config.yml"

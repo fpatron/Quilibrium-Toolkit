@@ -6,11 +6,15 @@ This project provides tools for managing Quilibrium nodes (https://github.com/Qu
 These tools are built using Ansible https://github.com/ansible/ansible.<br/>
 
 ## Pre-requisites
-1. Install ansible on your PC
+1. Install ansible on local system
 ```
 apt install ansible
 ```
-2. Clone this repository.
+2. Install python3 on local system
+```
+apt install python3
+```
+3. Clone this repository.
 
 ## Commands
 ```
@@ -18,7 +22,8 @@ apt install ansible
 ```
 
 ### Targets
-You define targets in your Ansible inventory file [inventories/hosts.yml]
+Hosts defined into your Ansible inventory file [inventories/hosts.yml]<br>
+Note: By default the user to login is setup as ubuntu in group_vars/all file. If you have a specific user to be logged in with please change the username in this file or directly into the hosts.yml file (see example).
 
 ### Actions
 

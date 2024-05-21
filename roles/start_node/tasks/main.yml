@@ -1,6 +1,3 @@
-- name: Include variables
-  include_vars: ../../defaults/vars.yml
-
 - name: Start Quilibrium node using screen
   shell: cd {{ node_path }}/ceremonyclient/node && screen -dmS quilibrium ./node
   register: quilibrium_start

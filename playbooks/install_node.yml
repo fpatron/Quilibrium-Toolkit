@@ -2,9 +2,6 @@
   hosts: "{{ target }}"
 
   tasks:
-    - name: Include variables
-      include_vars: ../defaults/vars.yml
-
     - name: Check if node already installed
       stat:
         path: "{{ node_path }}"
