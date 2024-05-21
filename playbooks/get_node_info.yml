@@ -2,6 +2,9 @@
   hosts: "{{ target }}"
 
   tasks:
+    - name: Include variables
+      include_vars: ../defaults/vars.yml
+
     - name: Get node information from quilibrium node
       uri:
         url: "{{ quilibrium_api_url }}/quilibrium.node.node.pb.NodeService/GetNodeInfo"
