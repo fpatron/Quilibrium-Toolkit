@@ -34,7 +34,7 @@ if [ $# -eq 0 ] || [ "$1" == "--help" ] || [ $# -ne 2 ] \
   echo "  - reboot_node: Reboot the specified node(s)"
   echo ""
   echo "Example:"
-  echo "./qtools.sh node01 start_node"
+  echo "./qtools.sh start_node node01"
   echo ""
   echo "Requirements:"
   echo "- The script requires the following files to exist:"
