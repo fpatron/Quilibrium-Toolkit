@@ -29,7 +29,7 @@ apt install python3
 The tools are provided as a script named ```qtools.sh```. To use it, follow this syntax:
 
 ```
-./qtools.sh <target> <action>
+./qtools.sh <action> <target>
 ```
 
 ## Explanation
