@@ -53,10 +53,10 @@ start_node | Starts the Quilibrium node(s) on the target machine(s).
 stop_node | Stops the Quilibrium node(s) running on the target machine(s).
 restart_node | Restarts the Quilibrium node(s) on the target machine(s).
 reboot_node | Reboots the entire node machine(s).
-install_watchdog | Monitor your node and get notify about its status (see readme for more details)"
-start_watchdog | Start watchdog service"
-stop_watchdog | Stop watchdog service"
-restart_watchdog | Restart watchdog service"
+install_watchdog | Monitor your node and get notify about its status (see readme for more details)
+start_watchdog | Start watchdog service
+stop_watchdog | Stop watchdog service
+restart_watchdog | Restart watchdog service
 
 
 ### Installing a Quilibrium node ```install_node```
