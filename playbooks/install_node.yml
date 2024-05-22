@@ -6,7 +6,7 @@
       stat:
         path: "{{ node_path }}"
       register: node_check
-    - name: Stop playbook if node exists (corrected)
+    - name: Stop playbook if node exists
       fail:
         msg: "Directory '{{ node_path }}' already exists. Playbook aborted."
       when: node_check.stat.exists
@@ -64,18 +64,6 @@
       include_role:
         name: roles/stop_node
 
-    - name: Update configuration (statsMultiaddr)
-      replace:
-        path: "{{ node_path }}/ceremonyclient/node/.config/config.yml"
-        regexp: 'statsMultiaddr: ""'
-        replace: 'statsMultiaddr: "/dns/stats.quilibrium.com/tcp/443"'
-    - name: Update configuration (listenGrpcMultiaddr)
-      replace:
-        path: "{{ node_path }}/ceremonyclient/node/.config/config.yml"
-        regexp: 'listenGrpcMultiaddr: ""'
-        replace: "listenGrpcMultiaddr: /ip4/127.0.0.1/tcp/8337"
-    - name: Update configuration (listenRESTMultiaddr)
-      replace:
-        path: "{{ node_path }}/ceremonyclient/node/.config/config.yml"
-        regexp: 'listenRESTMultiaddr: ""'
-        replace: "listenRESTMultiaddr: /ip4/127.0.0.1/tcp/8338"
+    - name: Update node configuration
+      include_role:
+        name: roles/updade_node_configuration

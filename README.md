@@ -43,6 +43,7 @@ The tools are provided as a script named ```qtools.sh```. To use it, follow this
 | Action | Description |
 | ---   | --- |
 install_node | Installs a new Quilibrium node on the specified target(s).
+setup_node | Configure sysctl and listen port (config.yml) on the specified node(s).
 create_service | Install your Quilibrium node as a service on the specified target(s) (see §Node commands).
 backup_node | Creates a backup of Quilibrium configuration files on the target node(s) and saves them locally in the ```./backup``` folder.
 get_node_info | Retrieves information about the Quilibrium node(s), such as its current max_frame, peer id...
@@ -82,6 +83,8 @@ listenRESTMultiaddr: /ip4/127.0.0.1/tcp/8338
 ```
 * statsMultiaddr: this parameter defines the address where the node will send statistics.
 * listenGrpcMultiaddr and listenRESTMultiaddr: these parameters specify the IP addresses and ports on which the node listens for incoming GRPC and REST API connections, respectively.
+
+This configuration is automatically done by the action ```install_node``` or can be done by the action ```setup_node```
 
 #### Automatic startup
 * The script sets up a cron job to automatically start the Quilibrium node whenever the system reboots. This ensures your node is always running unless manually stopped.

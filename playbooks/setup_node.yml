@@ -1,0 +1,20 @@
+- name: Setup Quilibrium node
+  hosts: "{{ target }}"
+
+  tasks:
+    - name: Check if node already installed
+      stat:
+        path: "{{ node_path }}/ceremonyclient/node/.config"
+      register: node_check
+    - name: Stop playbook if node not exists
+      fail:
+        msg: "Directory '{{ node_path }}/ceremonyclient/node/.config' not exists. Playbook aborted."
+      when: not(node_check.stat.exists)
+
+    - name: Update sysctl
+      include_role:
+        name: roles/sysctl
+
+    - name: Update node configuration
+      include_role:
+        name: roles/updade_node_configuration

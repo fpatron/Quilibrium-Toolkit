@@ -11,7 +11,7 @@ VAULT_FILE="vaults/vault.yml"
 if [ $# -eq 0 ] || [ "$1" == "--help" ] || [ $# -ne 2 ] \
      || [ "$1" != "start_node" ] && [ "$1" != "stop_node" ] && [ "$1" != "restart_node" ] \
      && [ "$1" != "get_node_info" ] && [ "$1" != "backup_node" ] && [ "$1" != "install_node" ]\
-     && [ "$1" != "reboot_node" ] && [ "$1" != "get_node_reward" ] && [ "$1" != "create_service" ]; then
+     && [ "$1" != "reboot_node" ] && [ "$1" != "get_node_reward" ] && [ "$1" != "create_service" ] && [ "$1" != "setup_node" ]; then
   echo "Quilibrium Runner"
   echo "------------------------"
   echo "This script simplifies the execution of Quilibrium monitoring tasks by automating the common command structure, adding basic checks for file existence, and providing detailed error messages."
@@ -31,6 +31,7 @@ if [ $# -eq 0 ] || [ "$1" == "--help" ] || [ $# -ne 2 ] \
   echo "  - restart_node: Restarts the Quilibrium node(s)"
   echo "  - backup_node: Backup Quilibrium configuration files"
   echo "  - install_node: Install a new Quilibrium node on the specified node(s)"
+  echo "  - setup_node: Configure sysctl and listen port on the specified node(s)"
   echo "  - create_service: Install your Quilibrium node as a service"
   echo "  - reboot_node: Reboot the specified node(s)"
   echo ""
