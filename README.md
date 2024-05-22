@@ -148,7 +148,7 @@ or [inventories/hosts.example.yml](inventories/hosts.example.yml)
 * The ansible_password variable is crucial, but we'll address how to secure it in the next section.
 * Refer to the Ansible documentation for more information on inventories: https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html
 
-<br/>
+### Important notes
 Variables are defined into the file [inventories/group_vars/all.yml](inventories/group_vars/all)
 * You can change the default user ```ansible_user``` (ubuntu by default)
 * You can change the root path of the Quilibrium node
