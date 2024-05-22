@@ -126,7 +126,6 @@ Here's an example of a basic inventory structure:
 ```
 nodes:
   vars:
-    ansible_user: <user_name>
     ansible_password: '{{ quilibrium_password }}'
   hosts:
     node01:
