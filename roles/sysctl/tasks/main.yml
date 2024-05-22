@@ -2,14 +2,14 @@
   become: true
   sysctl:
     name: net.core.rmem_max
-    value: "7500000"
+    value: "600000000"
     state: present
 - name: Update sysctl (wmem_max)
   become: true
   sysctl:
     name: net.core.wmem_max
-    value: "7500000"
+    value: "600000000"
     state: present
 - name: Update sysctl (dynamic)
   become: true
-  shell: sudo sysctl -w net.core.rmem_max=7500000 && sudo sysctl -w net.core.wmem_max=7500000
+  shell: sudo sysctl -w net.core.rmem_max=600000000 && sudo sysctl -w net.core.wmem_max=600000000
