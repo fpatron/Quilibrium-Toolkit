@@ -1,0 +1,6 @@
+- name: Create Quilibrium service
+  hosts: "{{ target }}"
+
+  tasks:
+    -  include_role:
+        name: roles/create_service

@@ -42,8 +42,9 @@ The tools are provided as a script named ```qtools.sh```. To use it, follow this
 
 | Action | Description |
 | ---   | --- |
-install_node | Installs a new Quilibrium node on the specified target(s). *
-backup_node | Creates a backup of Quilibrium configuration files on the target node(s) and saves them locally in the ```./backup``` folder. **
+install_node | Installs a new Quilibrium node on the specified target(s).
+create_service | Install your Quilibrium node as a service on the specified target(s) (see §Node commands).
+backup_node | Creates a backup of Quilibrium configuration files on the target node(s) and saves them locally in the ```./backup``` folder.
 get_node_info | Retrieves information about the Quilibrium node(s), such as its current max_frame, peer id...
 get_node_reward | Fetches information about the rewards earned by the Quilibrium node(s).
 start_node | Starts the Quilibrium node(s) on the target machine(s).
@@ -212,3 +213,26 @@ ansible-vault view vaults/vault.yml
 
 By following these steps and best practices, you can effectively secure your node passwords within the Quilibrium Tools project, enhancing the overall security posture of your Quilibrium node management.
 
+## Node commands
+
+Find here different commands to manage your node once connected into:
+
+* To start service, run
+```
+sudo systemctl start quilibrium
+```
+
+* To stop service, run
+```
+sudo systemctl stop quilibrium
+```
+
+* To restart service, run
+```
+sudo systemctl restart quilibrium
+```
+
+* To view service logs run
+```
+sudo journalctl -u quilibrium -f
+```

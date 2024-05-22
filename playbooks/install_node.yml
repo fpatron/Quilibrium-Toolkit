@@ -53,11 +53,13 @@
         msg: "Quilibrium node has been successfully installed."
       when: node_check.stat.exists
 
+    - name: Create Quilibrium service
+      include_role:
+        name: roles/create_service
+
     - name: Start Quilibrium node
       include_role:
         name: roles/start_node
-    - name: Sleep
-      shell: sleep 10
     - name: Stop Quilibrium node
       include_role:
         name: roles/stop_node
@@ -77,6 +79,3 @@
         path: "{{ node_path }}/ceremonyclient/node/.config/config.yml"
         regexp: 'listenRESTMultiaddr: ""'
         replace: "listenRESTMultiaddr: /ip4/127.0.0.1/tcp/8338"
-
-    - name: Launch Quilibrium node at reboot
-      shell: (crontab -u {{ ansible_user }} -l; echo "@reboot sleep 30 && cd {{ node_path }}/ceremonyclient/node && screen -dmS quilibrium ./node") | crontab -u {{ ansible_user }} -
