@@ -44,6 +44,7 @@ The tools are provided as a script named ```qtools.sh```. To use it, follow this
 | ---   | --- |
 install_node | Installs a new Quilibrium node on the specified target(s).
 setup_node | Configure sysctl and listen port (config.yml) on the specified node(s).
+fastsync_node | Sync your node with the latest snapshot. If you are having difficulties with synchronization, you can use this task to install the latest snapshot store folder on your node.
 create_service | Install your Quilibrium node as a service on the specified target(s) (see §Node commands).
 backup_node | Creates a backup of Quilibrium configuration files on the target node(s) and saves them locally in the ```./backup``` folder.
 get_node_info | Retrieves information about the Quilibrium node(s), such as its current max_frame, peer id...

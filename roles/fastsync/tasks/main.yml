@@ -1,0 +1,17 @@
+- name: Install required packages
+  become: true
+  apt:
+    name:
+      - unzip
+      - wget
+
+- name: Install latest store snapshot
+  shell: |
+    cd {{ node_path }}/ceremonyclient/node/.config
+    wget https://snapshots.cherryservers.com/quilibrium/store.zip
+    rm -rf store
+    unzip store.zip
+    rm store.zip
+    if [ ! -f ./REPAIR ]; then 
+      wget https://github.com/fpatron/Quilibrium-Toolkit/blob/master/assets/REPAIR
+    fi
