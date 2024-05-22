@@ -47,6 +47,7 @@ setup_node | Configure sysctl and listen port (config.yml) on the specified node
 fastsync_node | Sync your node with the latest snapshot. If you are having difficulties with synchronization, you can use this task to install the latest snapshot store folder on your node.
 create_service | Install your Quilibrium node as a service on the specified target(s) (see §Node commands).
 backup_node | Creates a backup of Quilibrium configuration files on the target node(s) and saves them locally in the ```./backup``` folder.
+install_watchdog | Monitor your node and get notify about its status
 get_node_info | Retrieves information about the Quilibrium node(s), such as its current max_frame, peer id...
 get_node_reward | Fetches information about the rewards earned by the Quilibrium node(s).
 start_node | Starts the Quilibrium node(s) on the target machine(s).
@@ -107,6 +108,67 @@ The ```backup_node``` action provides a convenient way to create local backups o
 
 The script stores the backed-up files in a directory named ```./backup``` within your current working directory.
 Each node's backup files are placed in a separate subfolder named after the node's hostname, ensuring clear organization and identification.
+
+### Monitor your Quilibrium node ```install_watchdog```
+
+This optional feature provides real-time monitoring of your Quilibrium node and the ability to receive notifications via Telegram. It can be a valuable tool for staying informed about your node's health.
+
+#### Functionality
+
+* The ```install_watchdog``` command sets up a monitoring service on the target node.
+* The service continuously checks for potential issues with your node's operation.
+* If an issue is detected, the following actions occur (configurable):
+  - **Automatic Restart:** The node can be automatically restarted to potentially resolve the issue.
+  - **Telegram Notification:** An alert message is sent to your Telegram chat, notifying you of the problem.
+
+#### Using the Watchdog installer
+
+* Execute the following command to install the watchdog on the target node:
+```
+./qtools.sh install_watchdog <target> telegram_id=<telegram_chat_id> auto_restart=<auto_restart> telegram_level=<level>
+```
+Where:
+
+* ```target```: the hostname of the node you want to monitor.
+* ```telegram_id=<telegram_chat_id>```: your Telegram chat ID (see instructions below).
+* ```auto_restart=<auto_restart>```: set to ```true``` to automatically restart the node on issues, or ```false``` to only receive notifications.
+* ```telegram_level=<level>```: Choose ```all``` to receive notifications for all events, or none to disable notifications.
+
+#### Important note about telegram
+* To find your Telegram chat ID, follow these steps:
+  * Open your Telegram app.
+  * In the search bar, type "**userinfobot**".
+  * Select the contact named "**userinfobot**".
+  * Tap "**Start**" at the bottom of the chat window.
+  * The bot will reply with your User ID (the chat ID).
+
+* **<span style="color:red">MANDATORY:</span>** Initiate a chat with the Quilibrium bot:
+  * Search for "@Quilibrium_bot" in Telegram
+  * Send it a message (e.g., "hello").
+
+#### Watchdog commands
+
+Find here different commands to manage your node once connected into:
+
+* To start service, run
+```
+sudo systemctl start quilibrium_watchdog
+```
+
+* To stop service, run
+```
+sudo systemctl stop quilibrium_watchdog
+```
+
+* To restart service, run
+```
+sudo systemctl restart quilibrium_watchdog
+```
+
+* To view service logs run
+```
+sudo journalctl -u quilibrium_watchdog -f
+```
 
 ## Examples
 

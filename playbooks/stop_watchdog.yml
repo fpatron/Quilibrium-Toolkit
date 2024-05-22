@@ -1,0 +1,7 @@
+- name: Stop Quilibrium watchdog
+  hosts: "{{ target }}"
+
+  tasks:
+    - name: Stop watchdog service
+      include_role:
+        name: roles/stop_watchdog

@@ -12,5 +12,5 @@
     User={{ ansible_user }}
     [Install]
     WantedBy=multi-user.target' > /lib/systemd/system/quilibrium.service
-    sudo systemctl daemon-reload
+    systemctl daemon-reload
     systemctl enable quilibrium.service

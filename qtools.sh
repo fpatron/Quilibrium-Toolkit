@@ -12,10 +12,12 @@ if [ $# -eq 0 ] || [ "$1" == "--help" ] || [ $# -ne 2 ] \
      || [ "$1" != "start_node" ] && [ "$1" != "stop_node" ] && [ "$1" != "restart_node" ] \
      && [ "$1" != "get_node_info" ] && [ "$1" != "backup_node" ] && [ "$1" != "install_node" ]\
      && [ "$1" != "reboot_node" ] && [ "$1" != "get_node_reward" ] && [ "$1" != "create_service" ]\
-     && [ "$1" != "setup_node" ] && [ "$1" != "fastsync_node" ]; then
+     && [ "$1" != "setup_node" ] && [ "$1" != "fastsync_node" ]\
+     && [ "$1" != "install_watchdog" ] && [ "$1" != "start_watchdog" ] && [ "$1" != "stop_watchdog" ] && [ "$1" != "restart_watchdog" ]; then
   echo "Quilibrium Runner"
   echo "------------------------"
   echo "This script simplifies the execution of Quilibrium monitoring tasks by automating the common command structure, adding basic checks for file existence, and providing detailed error messages."
+  echo "https://github.com/fpatron/Quilibrium-Toolkit"
   echo ""
   echo "Usage:"
   echo "./qtools.sh <action> <host>"
@@ -36,6 +38,11 @@ if [ $# -eq 0 ] || [ "$1" == "--help" ] || [ $# -ne 2 ] \
   echo "  - create_service: Install your Quilibrium node as a service"
   echo "  - fastsync_node: Sync your node with the latest snapshot"
   echo "  - reboot_node: Reboot the specified node(s)"
+  echo ""
+  echo "  - install_watchdog: Monitor your node and get notify about its status (see readme for more details)"
+  echo "  - start_watchdog: Start watchdog service"
+  echo "  - stop_watchdog: Stop watchdog service"
+  echo "  - restart_watchdog: Restart watchdog service"
   echo ""
   echo "Example:"
   echo "./qtools.sh start_node node01"
@@ -63,5 +70,15 @@ if [ ! -f "$VAULT_FILE" ]; then
   exit 1
 fi
 
+# Handle extra vars
+extra_vars=""
+for ((i=3; i<=$#; i++)); do
+  option=${!i}
+  if [ -n "$option" ]; then
+    extra_vars="${extra_vars} -e ${option}"
+  fi
+done
+extra_vars=$(echo "$extra_vars" | sed 's/^ *//; s/ *$//')
+
 # Execute the Ansible playbook
-ansible-playbook -i ${HOSTS_FILE} -e target=$2 -e @${VAULT_FILE} --ssh-common-args='-o StrictHostKeyChecking=no' --ask-vault-pass playbooks/$1.yml
+ansible-playbook -i ${HOSTS_FILE} -e target=$2 -e @${VAULT_FILE} $extra_vars --ssh-common-args='-o StrictHostKeyChecking=no' --ask-vault-pass playbooks/$1.yml

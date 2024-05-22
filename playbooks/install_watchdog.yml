@@ -1,0 +1,98 @@
+- name: Install Watchdog
+  hosts: "{{ target }}"
+  vars:
+    watchdog: "{{ node_path }}/watchdog"
+
+  tasks:
+    - name: Install required packages
+      become: true
+      apt:
+        name: 
+          - python3
+          - python3-pip
+        state: present
+
+    - name: Create watchdog directory
+      file:
+        path: "{{ watchdog }}"
+        state: directory
+
+    - name: Remove previous script
+      file:
+        path: "{{ watchdog }}/watchdog.py"
+        state: absent
+
+    - name: Remove previous requirements
+      file:
+        path: "{{ watchdog }}/requirements.txt"
+        state: absent
+
+    - name: Install watchdog
+      copy:
+        src: "../scripts/watchdog/watchdog.py"
+        dest: "{{ watchdog }}/watchdog.py"
+        owner: "{{ ansible_user }}"
+
+    - name: Install requirements
+      copy:
+        src: "../scripts/watchdog/requirements.txt"
+        dest: "{{ watchdog }}/requirements.txt"
+        owner: "{{ ansible_user }}"
+
+    - name: Install python package
+      shell: |
+        cd {{ watchdog }}
+        pip3 install -r requirements.txt
+
+    - name: Set auto_restart parameter
+      ini_file:
+        path: "{{ watchdog }}/.env"
+        option: AUTO_RESTART
+        section: node
+        value: "{{ auto_restart }}"
+        state: present
+      when: auto_restart is defined
+
+    - name: Set telegram_id parameter
+      ini_file:
+        path: "{{ watchdog }}/.env"
+        option: TELEGRAM_USER_ID
+        section: telegram
+        value: "{{ telegram_id }}"
+        state: present
+      when: telegram_id is defined
+
+    - name: Set telegram_level parameter
+      ini_file:
+        path: "{{ watchdog }}/.env"
+        option: TELEGRAM_PUBLISH_LEVEL
+        section: telegram
+        value: "{{ telegram_level }}"
+        state: present
+      when: telegram_level is defined
+
+
+    - name: Install watchdog service
+      become: true
+      shell: |
+        echo '[Unit]
+        Description=Quilibrium watchdog service
+        [Service]
+        Type=simple
+        Restart=always
+        RestartSec=3600s
+        WorkingDirectory={{ watchdog }}
+        Environment=GOEXPERIMENT=arenas
+        ExecStart=python3 {{ watchdog }}/watchdog.py
+        User={{ ansible_user }}
+        [Install]
+        WantedBy=multi-user.target' > /lib/systemd/system/quilibrium_watchdog.service
+
+    - name: Enable watchdog service
+      become: true
+      shell: |
+        systemctl daemon-reload
+        systemctl enable quilibrium_watchdog.service
+        systemctl restart quilibrium_watchdog.service
+
+    

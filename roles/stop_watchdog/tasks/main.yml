@@ -1,0 +1,2 @@
+- become: true
+  shell: systemctl stop quilibrium_watchdog.service
