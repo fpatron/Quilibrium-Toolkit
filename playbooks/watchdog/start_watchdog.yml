@@ -4,4 +4,4 @@
   tasks:
     - name: start watchdog
       include_role:
-        name: roles/start_watchdog
+        name: roles/watchdog/start_watchdog

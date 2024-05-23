@@ -4,4 +4,4 @@
   tasks:
     - name: Stop watchdog service
       include_role:
-        name: roles/stop_watchdog
+        name: roles/watchdog/stop_watchdog

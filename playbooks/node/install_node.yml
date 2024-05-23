@@ -13,17 +13,17 @@
 
     - name: Update and upgrade apt packages
       include_role:
-        name: roles/update-os
+        name: roles/system/update-os
     - name: Install required packages
       include_role:
-        name: roles/install-dependencies
+        name: roles/system/install-dependencies
     - name: Update sysctl
       include_role:
-        name: roles/sysctl
+        name: roles/system/sysctl
 
     - name: Install go
       include_role:
-        name: roles/install-go
+        name: roles/system/install-go
 
     - name: Install Quilibrium node
       shell: |
@@ -55,15 +55,15 @@
 
     - name: Create Quilibrium service
       include_role:
-        name: roles/create_service
+        name: roles/node/create_service
 
     - name: Start Quilibrium node
       include_role:
-        name: roles/start_node
+        name: roles/node/start_node
     - name: Stop Quilibrium node
       include_role:
-        name: roles/stop_node
+        name: roles/node/stop_node
 
     - name: Update node configuration
       include_role:
-        name: roles/updade_node_configuration
+        name: roles/node/updade_node_configuration

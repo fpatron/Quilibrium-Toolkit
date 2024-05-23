@@ -5,11 +5,11 @@
     - name: Backup config.yml
       fetch:
         src: "{{ node_path }}/ceremonyclient/node/.config/config.yml"
-        dest: ../backup/{{ inventory_hostname }}/config.yml
+        dest: ../../backup/{{ inventory_hostname }}/config.yml
         flat: true
 
     - name: Backup keys.yml
       fetch:
         src: "{{ node_path }}/ceremonyclient/node/.config/keys.yml"
-        dest: ../backup/{{ inventory_hostname }}/keys.yml
+        dest: ../../backup/{{ inventory_hostname }}/keys.yml
         flat: true

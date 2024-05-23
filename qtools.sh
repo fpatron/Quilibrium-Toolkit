@@ -8,25 +8,30 @@
 HOSTS_FILE="inventories/hosts.yml"
 VAULT_FILE="vaults/vault.yml"
 
-if [ $# -eq 0 ] || [ "$1" == "--help" ] || [ $# -ne 2 ] \
-     || [ "$1" != "start_node" ] && [ "$1" != "stop_node" ] && [ "$1" != "restart_node" ] \
-     && [ "$1" != "get_node_info" ] && [ "$1" != "backup_node" ] && [ "$1" != "install_node" ]\
-     && [ "$1" != "reboot_node" ] && [ "$1" != "get_node_reward" ] && [ "$1" != "create_service" ]\
-     && [ "$1" != "setup_node" ] && [ "$1" != "fastsync_node" ]\
-     && [ "$1" != "install_watchdog" ] && [ "$1" != "start_watchdog" ] && [ "$1" != "stop_watchdog" ] && [ "$1" != "restart_watchdog" ]; then
+# Find dynamically available playbooks
+declare -A command_paths
+while IFS= read -r -d '' file; do
+    playbook_path="${file#playbooks/}"
+    filename=$(basename "$file")
+    command_name="${filename%.*}"
+    command_paths["$command_name"]="$playbook_path"
+done < <(find playbooks -type f -name "*.yml" -print0)
+
+# Check if command is valid
+if [ $# -eq 0 ] || [ "$1" == "--help" ] || [ $# -lt 2 ] || [ -z "${command_paths[$1]}" ]; then
   echo "Quilibrium Runner"
   echo "------------------------"
   echo "This script simplifies the execution of Quilibrium monitoring tasks by automating the common command structure, adding basic checks for file existence, and providing detailed error messages."
   echo "https://github.com/fpatron/Quilibrium-Toolkit"
   echo ""
   echo "Usage:"
-  echo "./qtools.sh <action> <host>"
+  echo "./qtools.sh <command> <host>"
   echo ""
   echo "Arguments:"
-  echo "- <action>: The action to perform."
+  echo "- <command>: The command to perform."
   echo "- <host>: The name of the target host, group, or 'all' to execute the playbook on."
   echo ""
-  echo "**Supported Actions:**"
+  echo "**Supported commands:**"
   echo "  - get_node_info: Return information about the Quilibrium node(s)"
   echo "  - get_node_reward: Get rewards from node(s)"
   echo "  - start_node: Starts the Quilibrium node(s)"
@@ -80,5 +85,8 @@ for ((i=3; i<=$#; i++)); do
 done
 extra_vars=$(echo "$extra_vars" | sed 's/^ *//; s/ *$//')
 
-# Execute the Ansible playbook
-ansible-playbook -i ${HOSTS_FILE} -e target=$2 -e @${VAULT_FILE} $extra_vars --ssh-common-args='-o StrictHostKeyChecking=no' --ask-vault-pass playbooks/$1.yml
+# Construct playbook full path
+playbook_path="playbooks/${command_paths[$1]}"
+
+# Execute playbook
+ansible-playbook -i ${HOSTS_FILE} -e target=$2 -e @${VAULT_FILE} $extra_vars --ssh-common-args='-o StrictHostKeyChecking=no' --ask-vault-pass $playbook_path

@@ -14,15 +14,15 @@
     - block:
       - name: Stop Quilibrium node
         include_role:
-          name: roles/stop_node
+          name: roles/node/stop_node
       ignore_errors: true
 
     - name: Install latest store snapshot
       include_role:
-        name: roles/fastsync
+        name: roles/node/fastsync
 
     - block:
       - name: Start Quilibrium node
         include_role:
-          name: roles/start_node
+          name: roles/node/start_node
       ignore_errors: true

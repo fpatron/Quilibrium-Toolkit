@@ -13,8 +13,8 @@
 
     - name: Update sysctl
       include_role:
-        name: roles/sysctl
+        name: roles/system/sysctl
 
     - name: Update node configuration
       include_role:
-        name: roles/updade_node_configuration
+        name: roles/system/updade_node_configuration

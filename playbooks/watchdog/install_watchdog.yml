@@ -4,12 +4,16 @@
     watchdog: "{{ node_path }}/watchdog"
 
   tasks:
+    - name: Update and upgrade apt packages
+      include_role:
+        name: roles/system/update-os
     - name: Install required packages
       become: true
       apt:
         name: 
           - python3
           - python3-pip
+          - python3-virtualenv
         state: present
 
     - name: Create watchdog directory
@@ -29,20 +33,26 @@
 
     - name: Install watchdog
       copy:
-        src: "../scripts/watchdog/watchdog.py"
+        src: "../../scripts/watchdog/watchdog.py"
         dest: "{{ watchdog }}/watchdog.py"
         owner: "{{ ansible_user }}"
 
     - name: Install requirements
       copy:
-        src: "../scripts/watchdog/requirements.txt"
+        src: "../../scripts/watchdog/requirements.txt"
         dest: "{{ watchdog }}/requirements.txt"
         owner: "{{ ansible_user }}"
 
-    - name: Install python package
-      shell: |
-        cd {{ watchdog }}
-        pip3 install -r requirements.txt
+   # - name: Create virtual env
+   #   shell: |
+   #     cd {{ watchdog }}
+        #python3 -m venv env
+
+    - name: Create python virtual env and install modules
+      pip:
+        requirements: "{{ watchdog }}/requirements.txt"
+        virtualenv: "{{ watchdog }}/myenv"
+        virtualenv_command: virtualenv
 
     - name: Set auto_restart parameter
       ini_file:
@@ -83,7 +93,7 @@
         RestartSec=3600s
         WorkingDirectory={{ watchdog }}
         Environment=GOEXPERIMENT=arenas
-        ExecStart=python3 {{ watchdog }}/watchdog.py
+        ExecStart={{ watchdog }}/myenv/bin/python3 watchdog.py
         User={{ ansible_user }}
         [Install]
         WantedBy=multi-user.target' > /lib/systemd/system/quilibrium_watchdog.service

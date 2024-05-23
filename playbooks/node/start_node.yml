@@ -4,4 +4,4 @@
   tasks:
     - name: start node
       include_role:
-        name: roles/start_node
+        name: roles/node/start_node

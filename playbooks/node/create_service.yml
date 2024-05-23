@@ -3,4 +3,4 @@
 
   tasks:
     -  include_role:
-        name: roles/create_service
+        name: roles/node/create_service
