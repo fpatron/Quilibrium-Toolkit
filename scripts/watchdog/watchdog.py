@@ -112,10 +112,10 @@ def processLogs(logs):
 
 def notifyUser(data):
     if (TELEGRAM_PUBLISH_LEVEL is not None and TELEGRAM_PUBLISH_LEVEL == 'all'):
-        message = f"Balance: {data['my_balance']['value']}\n"
-        message += f"Current head frame: {data['current_head_frame']['value']}\n"
-        message += f"Uncooperative peers: {data['uncooperative_peers']['value']}\n"
-        message += f"Lobby state: {data['lobby_state']['value']}"
+        message = f"Balance: {data['my_balance']['value'] or 0}\n"
+        message += f"Current head frame: {data['current_head_frame']['value'] or 0}\n"
+        message += f"Uncooperative peers: {data['uncooperative_peers']['value'] or 0}\n"
+        message += f"Lobby state: {data['lobby_state']['value'] or 'NA'}"
         publishToTelegram(message)
 
 def publishToTelegram(message):
