@@ -192,6 +192,7 @@ def main():
     
     if not isNodeRunning():
         logger.warning("Node is not running")
+        restartNode()
         exit(1)
     
     output = getNodeLogs()
