@@ -14,7 +14,7 @@
         msg: "Failed to get node information: {{ node_info.msg }}"
 
     - name: Get rewards from quilibrium website
-      command: "python3 ../scripts/rewards.py {{ node_info.json.peerId }}"
+      command: "python3 ../../scripts/rewards.py {{ node_info.json.peerId }}"
       delegate_to: 127.0.0.1
       register: rewards
 
