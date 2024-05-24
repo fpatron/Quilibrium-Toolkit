@@ -89,7 +89,6 @@
         Description=Quilibrium watchdog service
         [Service]
         Type=simple
-        Restart=always
         RestartSec=3600s
         WorkingDirectory={{ watchdog }}
         Environment=GOEXPERIMENT=arenas

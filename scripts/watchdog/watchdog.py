@@ -189,6 +189,16 @@ def main():
     Main function to check quilibrium node logs and take appropriate actions.
     """
     logger.info("Starting quilibrium node checking")
+
+    logger.info("=================================")
+    logger.info(f"Auto restart is set to: {AUTO_RESTART}")
+    logger.info(f"Frame duration threshold is set to: {FRAME_DURATION_THRESHOLD}")
+    if (TELEGRAM_USER_ID is None):
+        logger.warning("Telegram ID is not setup, no message will be sent")
+    else:
+        logger.info(f"Telegram ID is set to: {TELEGRAM_USER_ID}")
+    logger.info(f"Telegram info level is set to: {TELEGRAM_PUBLISH_LEVEL}")
+    logger.info("=================================")
     
     if not isNodeRunning():
         logger.warning("Node is not running")
