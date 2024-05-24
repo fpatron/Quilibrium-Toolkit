@@ -1,17 +1,14 @@
-- name: update statsMultiaddr
-  replace:
+- replace:
     path: "{{ node_path }}/ceremonyclient/node/.config/config.yml"
     regexp: 'statsMultiaddr: ""'
     replace: 'statsMultiaddr: "/dns/stats.quilibrium.com/tcp/443"'
 
-- name: update listenGrpcMultiaddr
-  replace:
+- replace:
     path: "{{ node_path }}/ceremonyclient/node/.config/config.yml"
     regexp: 'listenGrpcMultiaddr: ""'
     replace: "listenGrpcMultiaddr: /ip4/127.0.0.1/tcp/8337"
 
-- name: update listenRESTMultiaddr
-  replace:
+- replace:
     path: "{{ node_path }}/ceremonyclient/node/.config/config.yml"
     regexp: 'listenRESTMultiaddr: ""'
     replace: "listenRESTMultiaddr: /ip4/127.0.0.1/tcp/8338"

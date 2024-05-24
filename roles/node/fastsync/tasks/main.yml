@@ -1,12 +1,10 @@
-- name: Install required packages
-  become: true
+- become: true
   apt:
     name:
       - unzip
       - wget
 
-- name: Install latest store snapshot
-  shell: |
+- shell: |
     cd {{ node_path }}/ceremonyclient/node/.config
     wget https://snapshots.cherryservers.com/quilibrium/store.zip
     rm -rf store
