@@ -63,24 +63,32 @@
         state: present
       when: auto_restart is defined
 
+    - name: Set publish_level parameter
+      ini_file:
+        path: "{{ watchdog }}/.env"
+        option: PUBLISH_LEVEL
+        section: notification
+        value: "{{ publish_level }}"
+        state: present
+      when: publish_level is defined
+
     - name: Set telegram_id parameter
       ini_file:
         path: "{{ watchdog }}/.env"
         option: TELEGRAM_USER_ID
-        section: telegram
+        section: notification
         value: "{{ telegram_id }}"
         state: present
       when: telegram_id is defined
 
-    - name: Set telegram_level parameter
+    - name: Set discord_webhook parameter
       ini_file:
         path: "{{ watchdog }}/.env"
-        option: TELEGRAM_PUBLISH_LEVEL
-        section: telegram
-        value: "{{ telegram_level }}"
+        option: DISCORD_WEBHOOK_URL
+        section: notification
+        value: "{{ discord_webhook }}"
         state: present
-      when: telegram_level is defined
-
+      when: discord_webhook is defined
 
     - name: Install watchdog service
       become: true

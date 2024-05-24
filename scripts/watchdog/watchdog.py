@@ -16,8 +16,9 @@ AUTO_RESTART= os.getenv("AUTO_RESTART", 'False').lower() in ('true', '1', 't') o
 # Threshold for frame duration in seconds
 FRAME_DURATION_THRESHOLD = os.getenv("FRAME_DURATION_THRESHOLD") or 4500
 
-# Telegram bot token and chat ID
-TELEGRAM_PUBLISH_LEVEL = os.getenv("TELEGRAM_PUBLISH_LEVEL") or "all"
+# Notifications
+PUBLISH_LEVEL =  os.getenv("PUBLISH_LEVEL") or os.getenv("TELEGRAM_PUBLISH_LEVEL") or "all"
+DISCORD_WEBHOOK_URL =  os.getenv("DISCORD_WEBHOOK_URL") or None
 TELEGRAM_BOT_TOKEN = '6787115559:AAFbfCTM8Q0YelI3WHniWnjkJU6M7zVvf-k'
 TELEGRAM_USER_ID= os.getenv("TELEGRAM_USER_ID") or None
 
@@ -111,12 +112,38 @@ def processLogs(logs):
     return result
 
 def notifyUser(data):
-    if (TELEGRAM_PUBLISH_LEVEL is not None and TELEGRAM_PUBLISH_LEVEL == 'all'):
+    if (PUBLISH_LEVEL is not None and PUBLISH_LEVEL == 'all'):
         message = f"Balance: {data['my_balance']['value'] or 0}\n"
         message += f"Current head frame: {data['current_head_frame']['value'] or 0}\n"
         message += f"Uncooperative peers: {data['uncooperative_peers']['value'] or 0}\n"
         message += f"Lobby state: {data['lobby_state']['value'] or 'NA'}"
-        publishToTelegram(message)
+        publish(message)
+        
+def publish(message):
+    publishToTelegram(message)
+    publishToDiscord(message)
+    
+def publishToDiscord(message):
+    """
+    Publish a message to a discord channel.
+    """
+    try:
+        if (DISCORD_WEBHOOK_URL is not None):
+            url = DISCORD_WEBHOOK_URL
+            data = {
+              "embeds": [{
+                "title": f"`  Watchdog  `  {socket.gethostname()}",
+                "description": message,
+                "color": 3224376
+              }]}
+            res = requests.post(url, json = data)
+            if (res.status_code >= 200 and res.status_code < 300):
+                logger.info("Message sent to Discord successfully")
+            else:
+                logger.error("Message not sent to Discord")
+    except Exception as e:
+        logger.error(f"Failed to send message to Discord: {e}")
+    
 
 def publishToTelegram(message):
     """
@@ -163,7 +190,7 @@ def restartNode():
         cmd = 'systemctl restart quilibrium'
         result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
         result.check_returncode()
-        publishToTelegram("Node is DOWN!\nIt has been automatically restarted")
+        publish("Node is DOWN!\nIt has been automatically restarted")
         logger.debug("Node successfully restarted")
     except subprocess.CalledProcessError as e:
         logger.error(f"Failed to restart node: {e}")
@@ -177,7 +204,7 @@ def isNodeRunning():
         cmd = 'systemctl status quilibrium --no-pager'
         result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
         if result.returncode != 0:
-            publishToTelegram("Node is not running!")
+            publish("Node is not running!")
             return False
         return True
     except subprocess.CalledProcessError as e:
@@ -189,7 +216,7 @@ def main():
     Main function to check quilibrium node logs and take appropriate actions.
     """
     logger.info("Starting quilibrium node checking")
-
+    
     logger.info("=================================")
     logger.info(f"Auto restart is set to: {AUTO_RESTART}")
     logger.info(f"Frame duration threshold is set to: {FRAME_DURATION_THRESHOLD}")
@@ -197,7 +224,11 @@ def main():
         logger.warning("Telegram ID is not setup, no message will be sent")
     else:
         logger.info(f"Telegram ID is set to: {TELEGRAM_USER_ID}")
-    logger.info(f"Telegram info level is set to: {TELEGRAM_PUBLISH_LEVEL}")
+    if (DISCORD_WEBHOOK_URL is None):
+        logger.warning("Discord webhook url is not setup, no message will be sent")
+    else:
+        logger.info(f"Discord webhook url is set to: {DISCORD_WEBHOOK_URL}")
+    logger.info(f"Publish info level is set to: {PUBLISH_LEVEL}")
     logger.info("=================================")
     
     if not isNodeRunning():
@@ -226,7 +257,7 @@ def main():
             if (AUTO_RESTART):
                 restartNode()
             else:
-                publishToTelegram("Node is DOWN!\nA restart is required")
+                publish("Node is DOWN!\nA restart is required")
         else:
             logger.info("Node is running fine")
 

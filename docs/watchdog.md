@@ -1,7 +1,7 @@
 
 # Monitor your node(s)
 
-This optional feature provides real-time monitoring of your Quilibrium node and the ability to receive notifications via Telegram. It is a valuable tool for staying informed about your node's health.
+This optional feature provides real-time monitoring of your Quilibrium node and the ability to receive notifications via Telegram or Discord. It is a valuable tool for staying informed about your node's health.
 
 <img src="https://cdn-blog.adafruit.com/uploads/2013/01/WatchDog.png" />
 
@@ -19,19 +19,19 @@ This optional feature provides real-time monitoring of your Quilibrium node and 
 
 * Execute the following command to install the watchdog on the target node:
 ```
-./qtools.sh install_watchdog <target> telegram_id=<telegram_chat_id> auto_restart=<auto_restart> telegram_level=<level>
+./qtools.sh install_watchdog <target> auto_restart=<auto_restart> telegram_id=<telegram_chat_id> discord_webhook=<discord_webhook> publish_level=<level>
 ```
 Where:
 
 * ```target```: the hostname of the node(s) you want to monitor.
-* ```telegram_id=<telegram_chat_id>```: your Telegram chat ID (see instructions below).
-* ```auto_restart=<auto_restart>```: set to ```true``` to automatically restart the node on issues, or ```false``` to only receive notifications.
-* ```telegram_level=<level>```: Choose ```all``` to receive notifications for all events, or none to disable notifications.
+* ```auto_restart=<auto_restart>```: (optional) set to ```true``` to automatically restart the node on issues, or ```false``` to only receive notifications.
+* ```telegram_id=<telegram_chat_id>```: (optional) your Telegram chat ID (see instructions below).
+* ```discord_webhook=<discord_webhook>```: (optional) your Discord webhook url (see instructions below).
+* ```publish_level=<level>```: (optional) choose ```all``` to receive notifications for all events, or none to disable notifications.
 
-## Important note about telegram 
+## Notes about Telegram 
 
 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Telegram_2019_Logo.svg/240px-Telegram_2019_Logo.svg.png" width="50"/>
-
 
 * To find your Telegram chat ID, follow these steps:
   * Open your Telegram app.
@@ -43,6 +43,15 @@ Where:
 * **<span style="color:red">MANDATORY:</span>** initiate a chat with the Quilibrium bot:
   * Search for "@Quilibrium_bot" in Telegram
   * Send it a message (e.g., "hello").
+
+## Notes about Discord 
+
+<img src="https://upload.wikimedia.org/wikipedia/fr/thumb/4/4f/Discord_Logo_sans_texte.svg/213px-Discord_Logo_sans_texte.svg.png" width="50"/>
+
+* Create a new channel in your Discord server
+* In the settings of your channel, go to the menu `Integrations`
+* Create a new webhook and copy the URL
+* This URL will be used by the parameter `discord_webhook`
 
 ## Watchdog commands
 
