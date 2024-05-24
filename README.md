@@ -81,7 +81,7 @@ start_watchdog | Start watchdog service on the specified target(s).
 stop_watchdog | Stop watchdog service on the specified target(s).
 restart_watchdog | Restart watchdog service on the specified target(s).
 
-[See "Montitor your node" guide for more information](docs/watchdog.md)
+[See "Monitor your node" guide for more information](docs/watchdog.md)
 
 ## Defining your nodes (inventory)
 
@@ -90,6 +90,10 @@ restart_watchdog | Restart watchdog service on the specified target(s).
 ## Secure your nodes
 
 [See "Secure your nodes" guide for more information](docs/vault.md)
+
+## Migrate your existing nodes
+
+[See "How to migrate your existing node(s)" guide for more information](docs/migration.md)
 
 ## Docs
 
