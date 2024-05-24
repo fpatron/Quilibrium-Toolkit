@@ -26,7 +26,7 @@ These parameters adjust the network buffer sizes to potentially improve Quilibri
 ## Quilibrium configuration
 * The script set up the Quilibrium configuration file (```node/.config/config.yml```). It sets the following parameters within the configuration file:
 ```
-statsMultiaddr: "/dns/stats.quilibrium.com/tcp/443"'
+statsMultiaddr: "/dns/stats.quilibrium.com/tcp/443"
 listenGrpcMultiaddr: /ip4/127.0.0.1/tcp/8337
 listenRESTMultiaddr: /ip4/127.0.0.1/tcp/8338
 ```
