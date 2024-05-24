@@ -11,6 +11,12 @@
         msg: "Directory '{{ node_path }}/ceremonyclient/node/.config' not exists. Playbook aborted."
       when: not(node_check.stat.exists)
 
+    - block:
+      - name: Stop Quilibrium node
+        include_role:
+          name: roles/node/stop_node
+      ignore_errors: true
+
     - name: Update sysctl
       include_role:
         name: roles/system/sysctl
@@ -18,3 +24,9 @@
     - name: Update node configuration
       include_role:
         name: roles/system/updade_node_configuration
+
+    - block:
+      - name: Start Quilibrium node
+        include_role:
+          name: roles/node/start_node
+      ignore_errors: true
