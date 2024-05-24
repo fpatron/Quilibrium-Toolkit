@@ -1,4 +1,4 @@
-# How to Migrate an Existing Node?
+# How to Migrate an existing node?
 
 It is possible to use this toolkit with your existing node(s) without starting from scratch.
 
