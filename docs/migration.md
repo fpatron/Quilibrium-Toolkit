@@ -2,6 +2,8 @@
 
 It is possible to use this toolkit with your existing node(s) without starting from scratch.
 
+<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTuUrwpJwSEpxl6yZ5nGJLYTGc45QI7vJTnWOgqZgvGJSmNxjlrIrSOqwIBY8cDELaWTMI" />
+
 ## Before Migrating
 1. Check that your `hosts.yml` file is well configured ([see guide](inventory.md)).
 1. Check that your `vault.yml` file is well configured ([see guide](vault.md)).
