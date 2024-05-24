@@ -104,3 +104,4 @@ restart_watchdog | Restart watchdog service on the specified target(s).
 * [How to backup your node(s)?](docs/backup.md)
 * [How to get info about your node(s)?](docs/info.md)
 * [How to monitor your node(s)?](docs/watchdog.md)
+* [How to migrate existing node(s)?](docs/migration.md)
