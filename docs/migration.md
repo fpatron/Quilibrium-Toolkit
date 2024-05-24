@@ -63,6 +63,17 @@ This command will create a service (`systemctl`).
 
 See [Install and configure guide](installation.md) for more information
 
+### 5. **Update the node configuration files**
+
+```
+./qtools.sh setup_node <target>
+```
+Where `<target>` is the target you migrate.
+
+This command will update the configuration files of your node as needed.
+
+See [Install and configure guide](installation.md) for more information
+
 ### 5. **Start your node**
 
 ```
