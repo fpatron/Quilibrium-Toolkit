@@ -1,0 +1,39 @@
+- name: Upgrade Quilibrium node
+  hosts: "{{ target }}"
+
+  tasks:
+    - name: Check if node is installed
+      stat:
+        path: "{{ node_path }}/ceremonyclient/node/.config"
+      register: node_check
+    - name: Stop playbook if node not exists
+      fail:
+        msg: "Directory '{{ node_path }}/ceremonyclient/node/.config' not exists. Playbook aborted."
+      when: not(node_check.stat.exists)
+
+    - block:
+      - name: Stop Quilibrium node
+        include_role:
+          name: roles/node/stop_node
+      ignore_errors: true
+
+    - name: Update Quilibrium node
+      shell: |
+        export GOROOT=/usr/local/go
+        export GOPATH=$HOME/go
+        export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
+        source {{ ansible_env.HOME }}/.bashrc
+        cd {{ node_path }}
+        git fetch origin
+        git merge origin
+        cd ceremonyclient/node
+        rm -f ./node
+        GOEXPERIMENT=arenas /usr/local/go/bin/go build .
+      args:
+        executable: /bin/bash
+
+    - block:
+      - name: Start Quilibrium node
+        include_role:
+          name: roles/node/start_node
+      ignore_errors: true

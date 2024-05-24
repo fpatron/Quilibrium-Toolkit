@@ -60,6 +60,7 @@ The tools are provided as a script named ```qtools.sh```. To use it, follow this
 | Command | Description |
 | ---   | --- |
 install_node | Installs a new Quilibrium node on the specified target(s).<br>[See install and configure guide](docs/installation.md)
+upgrade_node | Upgrade Quilibrium node on the specified target(s).<br>[See install and configure guide](docs/installation.md)
 setup_node | Configure sysctl and Quilibrium API (config.yml) on the specified target(s).<br>[See install and configure guide](docs/installation.md)
 create_service | Install your Quilibrium node as a service (daemon) on the specified target(s).<br>[See install and configure guide](docs/installation.md)
 fastsync_node | Sync your node with the latest snapshot. If you are having difficulties with synchronization, you can use this task to install the latest snapshot store folder on the specified target(s).<br>[See fastsync guide](docs/fastsync.md)

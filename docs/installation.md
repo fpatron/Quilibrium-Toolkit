@@ -40,6 +40,19 @@ This configuration is automatically done by the action ```install_node``` or can
 
 This configuration is automatically done by the action `install_node` or can be done by the action `setup_node`.
 
+## Upgrade your node(s)
+
+* Execute the following command to upgrade your node(s)
+```
+./qtools.sh upgrade_node <target>
+```
+
+This command will:
+* stop your node
+* fetch latest Quilibrium version
+* build your node
+* start your node
+
 ## Automatic Startup
 * The script adds a service to automatically start the Quilibrium node whenever the system reboots. This ensures your node is always running unless manually stopped.
 
