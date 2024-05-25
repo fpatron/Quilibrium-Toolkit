@@ -23,12 +23,12 @@
         export GOPATH=$HOME/go
         export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
         source {{ ansible_env.HOME }}/.bashrc
-        cd {{ node_path }}
-        git fetch origin
-        git merge origin
-        cd ceremonyclient/node
+        cd {{ node_path }}/ceremonyclient
+        git pull
+        git checkout release 
+        cd node
         rm -f ./node
-        GOEXPERIMENT=arenas /usr/local/go/bin/go build .
+        ln -s ./node-1.4.18-linux-amd64 ./node
       args:
         executable: /bin/bash
 
