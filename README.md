@@ -2,7 +2,7 @@
 
 This project provides a toolkit for simplifying the management of your Quilibrium nodes.<br/>
 With these tools, you can perform essential actions and monitor multiple nodes effortlessly, saving you valuable time and ensuring smooth operation.<br/>
-https://github.com/QuilibriumNetwork/ceremonyclient
+https://source.quilibrium.com/quilibrium/ceremonyclient.git
 
 <img src="https://quilibrium.com/logo.png" width="50%" />
 
