@@ -1,12 +1,17 @@
 - become: true
   sysctl:
     name: net.core.rmem_max
-    value: "600000000"
+    value: "7500000"
     state: present
 - become: true
   sysctl:
     name: net.core.wmem_max
-    value: "600000000"
+    value: "7500000"
     state: present
 - become: true
-  shell: sudo sysctl -w net.core.rmem_max=600000000 && sudo sysctl -w net.core.wmem_max=600000000
+  sysctl:
+    name: vm.nr_hugepages
+    value: "0"
+    state: present
+- become: true
+  shell: sudo sysctl -w net.core.rmem_max=7500000 && sudo sysctl -w net.core.wmem_max=7500000 && sudo sysctl -w vm.nr_hugepages=0
