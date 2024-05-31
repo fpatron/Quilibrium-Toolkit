@@ -12,3 +12,9 @@
     path: "{{ node_path }}/ceremonyclient/node/.config/config.yml"
     regexp: 'listenRESTMultiaddr: ""'
     replace: "listenRESTMultiaddr: /ip4/127.0.0.1/tcp/8338"
+
+- lineinfile:
+    path: "{{ node_path }}/ceremonyclient/node/.config/config.yml"
+    regexp: '^(\s*)dataWorkerMemoryLimit:.*$'
+    line: '  dataWorkerMemoryLimit: {{ dataWorkerMemoryLimit }}'
+    insertafter: '^engine:$'
