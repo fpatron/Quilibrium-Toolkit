@@ -24,6 +24,7 @@
         export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
         source {{ ansible_env.HOME }}/.bashrc
         cd {{ node_path }}/ceremonyclient
+        git remote set-url origin https://source.quilibrium.com/quilibrium/ceremonyclient.git
         git pull
         git checkout release 
         cd node
