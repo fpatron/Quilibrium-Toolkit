@@ -6,15 +6,13 @@ import re
 from datetime import datetime
 import subprocess
 import os
+import psutil
 from dotenv import load_dotenv # type: ignore
 
 load_dotenv()
 
 # Restart automatically node
 AUTO_RESTART= os.getenv("AUTO_RESTART", 'False').lower() in ('true', '1', 't') or False
-
-# Threshold for frame duration in seconds
-FRAME_DURATION_THRESHOLD = os.getenv("FRAME_DURATION_THRESHOLD") or 4500
 
 # Notifications
 PUBLISH_LEVEL =  os.getenv("PUBLISH_LEVEL") or os.getenv("TELEGRAM_PUBLISH_LEVEL") or "all"
@@ -26,144 +24,10 @@ TELEGRAM_USER_ID= os.getenv("TELEGRAM_USER_ID") or None
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-def getNodeLogs():
-    """
-    Fetch logs from the quilibrium service using journalctl.
-    """
-    cmd = 'journalctl -u quilibrium --since "2 hour ago" --no-pager | tac'
-    try:
-        logger.debug("Executing command to fetch logs")
-        result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
-        result.check_returncode()
-        logger.debug("Logs fetched successfully")
-        return result.stdout
-    except subprocess.CalledProcessError as e:
-        logger.error(f"Failed to fetch logs: {e}")
-        return None
 
-def formatTimestamp(ts):
-    """
-    Convert a Unix timestamp to a human-readable date.
-    """
-    return datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S.%f')
-
-def formatToJson(output):
-    """
-    Parse log output and extract JSON objects.
-    """
-    json_logs = re.findall(r'({.*?})', output)
-    try:
-        logger.debug("Parsing logs to JSON")
-        return [json.loads(log) for log in json_logs]
-    except json.JSONDecodeError:
-        logger.error("Failed to parse logs as JSON")
-        return None
-
-def processLogs(logs):
-    """
-    Process the logs and extract relevant information.
-    """
-    logger.debug("Processing logs")
-    result = {
-        "current_head_frame": {
-            "value": None,
-            "date": None,
-            "timestamp": None
-        },
-        "uncooperative_peers": {
-            "value": None,
-            "date": None,
-            "timestamp": None
-        },
-        "my_balance": {
-            "value": None,
-            "date": None,
-            "timestamp": None
-        },
-        "lobby_state": {
-            "value": None,
-            "date": None,
-            "timestamp": None
-        }
-    }
-
-    for log in logs:
-        if result["current_head_frame"]["value"] is None and "current_head_frame" in log:
-            result["current_head_frame"]["value"] = log["current_head_frame"]
-            result["current_head_frame"]["date"] = formatTimestamp(log["ts"])
-            result["current_head_frame"]["timestamp"] = log["ts"]
-        
-        if result["uncooperative_peers"]["value"] is None and "uncooperative_peers" in log:
-            result["uncooperative_peers"]["value"] = log["uncooperative_peers"]
-            result["uncooperative_peers"]["date"] = formatTimestamp(log["ts"])
-            result["uncooperative_peers"]["timestamp"] = log["ts"]
-        
-        if result["my_balance"]["value"] is None and "my_balance" in log:
-            result["my_balance"]["value"] = log["my_balance"]
-            result["my_balance"]["date"] = formatTimestamp(log["ts"])
-            result["my_balance"]["timestamp"] = log["ts"]
-        
-        if result["lobby_state"]["value"] is None and "lobby_state" in log:
-            result["lobby_state"]["value"] = log["lobby_state"]
-            result["lobby_state"]["date"] = formatTimestamp(log["ts"])
-            result["lobby_state"]["timestamp"] = log["ts"]
-
-    logger.debug(f"Processed data: {result}")
-    return result
-
-def notifyUser(data):
-    if (PUBLISH_LEVEL is not None and PUBLISH_LEVEL == 'all'):
-        message = f"Balance: {data['my_balance']['value'] or 0}\n"
-        message += f"Current head frame: {data['current_head_frame']['value'] or 0}\n"
-        message += f"Uncooperative peers: {data['uncooperative_peers']['value'] or 0}\n"
-        message += f"Lobby state: {data['lobby_state']['value'] or 'NA'}"
-        publish(message)
-        
-def publish(message):
-    publishToTelegram(message)
-    publishToDiscord(message)
-    
-def publishToDiscord(message):
-    """
-    Publish a message to a discord channel.
-    """
-    try:
-        if (DISCORD_WEBHOOK_URL is not None):
-            url = DISCORD_WEBHOOK_URL
-            data = {
-              "embeds": [{
-                "title": f"`  Watchdog  `  {socket.gethostname()}",
-                "description": message,
-                "color": 3224376
-              }]}
-            res = requests.post(url, json = data)
-            if (res.status_code >= 200 and res.status_code < 300):
-                logger.info("Message sent to Discord successfully")
-            else:
-                logger.error("Message not sent to Discord")
-    except Exception as e:
-        logger.error(f"Failed to send message to Discord: {e}")
-    
-
-def publishToTelegram(message):
-    """
-    Publish a message to a Telegram chat.
-    """
-    try:
-        if (TELEGRAM_USER_ID is not None):
-            url = f'https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage'
-            data = {
-                'chat_id': TELEGRAM_USER_ID,
-                'text': f"<b>[{socket.gethostname()}]</b>\n{message}",
-                'parse_mode': 'html'
-            }
-            res = requests.post(url, json = data)
-            if (res.status_code == 200):
-                logger.info("Message sent to Telegram successfully")
-            else:
-                logger.error("Message not sent to Telegram")
-    except Exception as e:
-        logger.error(f"Failed to send message to Telegram: {e}")
+#
+# Quilibrium methods
+#
 
 def needRestartNode(data):
     """
@@ -171,13 +35,7 @@ def needRestartNode(data):
     """
     needRestart = False
     
-    if data is not None:
-        if data["uncooperative_peers"]["value"] is None:
-            logger.warning("Node not ready, uncooperative_peers data missing")
-        elif data["current_head_frame"]["timestamp"] is not None:
-            duration = (datetime.now() - datetime.fromtimestamp(data["current_head_frame"]["timestamp"])).total_seconds()
-            logger.debug(f"Time since last head frame: {duration} seconds")
-            needRestart = duration > FRAME_DURATION_THRESHOLD
+    ## todo find limits to restart node
 
     return needRestart
 
@@ -210,6 +68,250 @@ def isNodeRunning():
     except subprocess.CalledProcessError as e:
         logger.error(f"Failed to check node status: {e}")
         return False
+    
+def getNodeInfo():
+    """
+    Get node quilibrium information
+    """
+    logger.debug("Getting node information...")
+    
+    data = {
+        "peer_id": "NA",
+        "version": "NA",
+        "max_frame": 0,
+        "peer_score": 0,
+        "owned_balance": 0,
+        "unconfirmed_balance": 0
+    }
+    
+    try:
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        cmd = "./node -node-info"
+        result = subprocess.run(cmd, shell=True, capture_output=True, text=True, cwd=f"{current_dir}/../ceremonyclient/node")
+        result.check_returncode()
+        
+        peer_id_match = re.search(r"Peer ID: (.+)", result.stdout)
+        if peer_id_match:
+            data["peer_id"] = peer_id_match.group(1)
+            
+        version_match = re.search(r"Version: (.+)", result.stdout)
+        if version_match:
+            data["version"] = version_match.group(1)
+        
+        max_frame_match = re.search(r"Max Frame: (\d+)", result.stdout)
+        if max_frame_match:
+            data["max_frame"] = int(max_frame_match.group(1))
+        
+        peer_score_match = re.search(r"Peer Score: (\d+)", result.stdout)
+        if peer_score_match:
+            data["peer_score"] = int(peer_score_match.group(1))
+        
+        owned_balance_match = re.search(r"Owned balance: (\d+) QUIL", result.stdout)
+        if owned_balance_match:
+            data["owned_balance"] = int(owned_balance_match.group(1))
+        
+        unconfirmed_balance_match = re.search(r"Unconfirmed balance: (\d+) QUIL", result.stdout)
+        if unconfirmed_balance_match:
+            data["unconfirmed_balance"] = int(unconfirmed_balance_match.group(1))
+
+    except subprocess.CalledProcessError as e:
+        logger.error(f"Failed to get not information: {e}")
+        
+    return data
+    
+
+#
+# System stats methods
+#
+
+def get_disk_usage():
+    disk_usage = psutil.disk_usage('/')
+    total = disk_usage.total / (1024 ** 3)
+    used = disk_usage.used / (1024 ** 3)
+    free = disk_usage.free / (1024 ** 3)
+    percent = disk_usage.percent
+    return total, used, free, percent
+
+def get_cpu_usage():
+    cpu_usage = psutil.cpu_percent(interval=1)
+    physical_cores = psutil.cpu_count(logical=False)
+    logical_cores = psutil.cpu_count(logical=True)
+    sensors = psutil.sensors_temperatures()
+    core_temperatures= sensors.get('coretemp')[0][1] if sensors is not None and sensors.get('coretemp') is not None else 0
+    return cpu_usage, physical_cores, logical_cores, core_temperatures
+
+def get_memory_usage():
+    memory_info = psutil.virtual_memory()
+    total = memory_info.total / (1024 ** 3)
+    available = memory_info.available / (1024 ** 3)
+    used = memory_info.used / (1024 ** 3)
+    percent = memory_info.percent
+    return total, available, used, percent
+
+#
+# Messaging methods
+#
+
+def format_percentage(value, threshold=90):
+    if value >= threshold:  # Assuming the limit is 100%, values above 90% should be highlighted
+        return f"**{value}%** :red_circle:"
+    return f"{value}%"
+
+def formatDataForDiscord(data):
+    node = data["node"]
+    cpu = data["cpu"]
+    disk = data["disk"]
+    memory = data["memory"]
+    
+    embed = {
+        "title": f"`  {socket.gethostname()}  `",
+        "color": 0x3498db,
+        "fields": [
+            {
+                "name": "Quilibrium node",
+                "value": (
+                    f"- Status: {'OK' if node is not None else 'KO'}\n"
+                    f"- Version: {node['version']}\n"
+                    f"- Max Frame: {node['max_frame']}\n"
+                    f"- Peer Score: {node['peer_score']}\n"
+                    f"- Owned balance: {node['owned_balance']}\n"
+                    f"- Unconfirmed balance: {node['unconfirmed_balance']}"
+                ),
+                "inline": True
+            },
+            {
+                "name": "CPU usage",
+                "value": (
+                    f"- Usage: {format_percentage(cpu['cpu_usage'], 90)}\n"
+                    f"- Physical cores: {cpu['physical_cores']}\n"
+                    f"- Logical cores: {cpu['logical_cores']}\n"
+                    f"- Temperature: {cpu['core_temperatures']}°C"
+                ),
+                "inline": True
+            },
+            {
+               "name": "\t",
+               "value": "\t"
+            },
+            {
+                "name": "Memory usage",
+                "value": (
+                    f"- Total Mmmory: {memory['total_memory']:.2f} GB\n"
+                    f"- Available memory: {memory['available_memory']:.2f} GB\n"
+                    f"- Used memory: {memory['used_memory']:.2f} GB\n"
+                    f"- Memory usage: {format_percentage(memory['percent_memory'], 90)}"
+                ),
+                "inline": True
+            },
+            {
+                "name": "Disk usage",
+                "value": (
+                    f"- Total disk: {disk['total_disk']:.2f} GB\n"
+                    f"- Used disk: {disk['used_disk']:.2f} GB\n"
+                    f"- Free disk: {disk['free_disk']:.2f} GB\n"
+                    f"- Disk usage: {format_percentage(disk['percent_disk'], 90)}"
+                ),
+                "inline": True
+            },
+        ],
+        "footer": {
+            "text": f"Peer ID: {node['peer_id']}",
+        }
+    }
+    
+    return { "embeds": [embed] }
+
+def formatDataForTelegram(data):
+    node = data["node"]
+    cpu = data["cpu"]
+    disk = data["disk"]
+    memory = data["memory"]
+    
+    message = (
+        f"*Node information:*\n"
+        f"- Status: {'OK' if node is not None else 'KO'}\n"
+        f"- Peer ID: {node['peer_id']}\n"
+        f"- Version: {node['version']}\n"
+        f"- Max Frame: {node['max_frame']}\n"
+        f"- Peer Score: {node['peer_score']}\n"
+        f"- Owned balance: {node['owned_balance']}\n"
+        f"- Unconfirmed balance: {node['unconfirmed_balance']}\n\n"
+        f"*CPU usage:*\n"
+        f"- Usage: {cpu['cpu_usage']}%\n"
+        f"- Physical cores: {cpu['physical_cores']}\n"
+        f"- Logical cores: {cpu['logical_cores']}\n"
+        f"- Core temperatures: {cpu['core_temperatures']}°C\n\n"
+        f"*Disk usage:*\n"
+        f"- Total disk: {disk['total_disk']:.2f} GB\n"
+        f"- Used disk: {disk['used_disk']:.2f} GB\n"
+        f"- Free disk: {disk['free_disk']:.2f} GB\n"
+        f"- Disk usage: {disk['percent_disk']}%\n\n"
+        f"*Memory usage:*\n"
+        f"- Total memory: {memory['total_memory']:.2f} GB\n"
+        f"- Available memory: {memory['available_memory']:.2f} GB\n"
+        f"- Used memory: {memory['used_memory']:.2f} GB\n"
+        f"- Memory usage: {memory['percent_memory']}%"
+    )
+    
+    return message
+
+def notifyUser(data):
+    publishToDiscord(formatDataForDiscord(data), None)
+    publishToTelegram(formatDataForTelegram(data))
+
+def publish(message):
+    publishToTelegram(message)
+    publishToDiscord(None, message)
+    
+def publishToDiscord(payload, message):
+    """
+    Publish a message to a discord channel.
+    """
+    try:
+        if (DISCORD_WEBHOOK_URL is not None):
+            url = DISCORD_WEBHOOK_URL
+            data = payload or {
+              "embeds": [{
+                "title": f"`  Watchdog  `  {socket.gethostname()}",
+                "description": message,
+                "color": 3224376
+              }]}
+            res = requests.post(url, json = data)
+            if (res.status_code >= 200 and res.status_code < 300):
+                logger.info("Message sent to Discord successfully")
+            else:
+                logger.error("Message not sent to Discord")
+    except Exception as e:
+        logger.error(f"Failed to send message to Discord: {e}")
+    
+
+def publishToTelegram(message):
+    """
+    Publish a message to a Telegram chat.
+    """
+    try:
+        if (TELEGRAM_USER_ID is not None):
+            url = f'https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage'
+            data = {
+                'chat_id': TELEGRAM_USER_ID,
+                'text': (
+                    f"*[{socket.gethostname()}]*"
+                    f"\n\n"
+                    f"{message}"
+                ),
+                'parse_mode': 'markdown'
+            }
+            res = requests.post(url, json = data)
+            if (res.status_code == 200):
+                logger.info("Message sent to Telegram successfully")
+            else:
+                logger.error("Message not sent to Telegram")
+    except Exception as e:
+        logger.error(f"Failed to send message to Telegram: {e}")
+
+#
+# Main
+#
 
 def main():
     """
@@ -219,7 +321,6 @@ def main():
     
     logger.info("=================================")
     logger.info(f"Auto restart is set to: {AUTO_RESTART}")
-    logger.info(f"Frame duration threshold is set to: {FRAME_DURATION_THRESHOLD}")
     if (TELEGRAM_USER_ID is None):
         logger.warning("Telegram ID is not setup, no message will be sent")
     else:
@@ -236,23 +337,35 @@ def main():
         restartNode()
         exit(1)
     
-    output = getNodeLogs()
-
-    if output is None:
-        logger.error("Failed to fetch logs")
-        exit(1)
-
-    logs = formatToJson(output)
-    if logs is None:
-        logger.error("Failed to parse logs as JSON")
-        exit(1)
-
-    data = processLogs(logs)
+    info = getNodeInfo()
+    total_disk, used_disk, free_disk, percent_disk = get_disk_usage()
+    cpu_usage, physical_cores, logical_cores, core_temperatures = get_cpu_usage()
+    total_memory, available_memory, used_memory, percent_memory = get_memory_usage()
     
-    if data is not None:
-        notifyUser(data)
+    if info is not None:
+        notifyUser({
+            "node": info,
+            "cpu": {
+                "cpu_usage": cpu_usage,
+                "physical_cores": physical_cores, 
+                "logical_cores": logical_cores,
+                "core_temperatures": core_temperatures,
+            },
+            "disk": {
+                "total_disk": total_disk,
+                "used_disk": used_disk,
+                "free_disk": free_disk,
+                "percent_disk": percent_disk,
+            },
+            "memory": {
+                "total_memory": total_memory,
+                "available_memory": available_memory,
+                "used_memory": used_memory,
+                "percent_memory": percent_memory,
+            }
+        })
     
-        if needRestartNode(data):
+        if needRestartNode(info):
             logger.warning("Node restart required")
             if (AUTO_RESTART):
                 restartNode()
