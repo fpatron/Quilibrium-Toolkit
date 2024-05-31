@@ -81,14 +81,14 @@ def getNodeInfo():
         "max_frame": 0,
         "peer_score": 0,
         "owned_balance": 0,
-        "unconfirmed_balance": 0
+        "unconfirmed_balance": 0,
+        "difficulty": 0
     }
     
     try:
         current_dir = os.path.dirname(os.path.abspath(__file__))
         cmd = "./node -node-info"
         result = subprocess.run(cmd, shell=True, capture_output=True, text=True, cwd=f"{current_dir}/../ceremonyclient/node")
-        result.check_returncode()
         
         peer_id_match = re.search(r"Peer ID: (.+)", result.stdout)
         if peer_id_match:
@@ -114,10 +114,66 @@ def getNodeInfo():
         if unconfirmed_balance_match:
             data["unconfirmed_balance"] = int(unconfirmed_balance_match.group(1))
 
+        data["difficulty"] = getDifficulty()
+        
     except subprocess.CalledProcessError as e:
         logger.error(f"Failed to get not information: {e}")
         
     return data
+
+def getDifficulty():
+    output = getNodeLogs()
+    if output is None:
+        logger.error("Failed to fetch logs")
+        exit(1)
+    logs = formatToJson(output)
+    if logs is None:
+        logger.error("Failed to parse logs as JSON")
+        exit(1)
+    data = processLogs(logs)
+    return data['difficulty']
+    
+
+def getNodeLogs():
+    """
+    Fetch logs from the quilibrium service using journalctl.
+    """
+    cmd = 'journalctl -u quilibrium --since "1 hour ago" --no-pager | tac'
+    try:
+        logger.debug("Executing command to fetch logs")
+        result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+        result.check_returncode()
+        logger.debug("Logs fetched successfully")
+        return result.stdout
+    except subprocess.CalledProcessError as e:
+        logger.error(f"Failed to fetch logs: {e}")
+        return None
+
+def formatToJson(output):
+    """
+    Parse log output and extract JSON objects.
+    """
+    json_logs = re.findall(r'({.*?})', output)
+    try:
+        logger.debug("Parsing logs to JSON")
+        return [json.loads(log) for log in json_logs]
+    except json.JSONDecodeError:
+        logger.error("Failed to parse logs as JSON")
+        return None
+
+def processLogs(logs):
+    """
+    Process the logs and extract relevant information.
+    """
+    logger.debug("Processing logs")
+    result = { "difficulty": None }
+
+    for log in logs:
+        if result["difficulty"] is None and "previous_difficulty_metric" in log:
+            result["difficulty"] = log["previous_difficulty_metric"]
+
+    logger.debug(f"Processed data: {result}")
+    return result
     
 
 #
@@ -173,6 +229,7 @@ def formatDataForDiscord(data):
                     f"- Status: {'OK' if node is not None else 'KO'}\n"
                     f"- Version: {node['version']}\n"
                     f"- Max Frame: {node['max_frame']}\n"
+                    f"- Difficulty: {node['difficulty']}\n"
                     f"- Peer Score: {node['peer_score']}\n"
                     f"- Owned balance: {node['owned_balance']}\n"
                     f"- Unconfirmed balance: {node['unconfirmed_balance']}"
