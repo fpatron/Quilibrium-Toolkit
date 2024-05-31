@@ -1,6 +1,6 @@
 # Defining your nodes in the inventory
 
-Quilibrium Tools rely on an inventory file located at [inventories/hosts.yml](inventories/hosts.yml) to define your nodes and their details.
+Quilibrium Tools rely on an inventory file located at ```inventories/hosts.yml``` to define your nodes and their details.
 
 <img src="https://t4.ftcdn.net/jpg/01/46/35/85/360_F_146358501_31AcLM4umtVDEpGfnLmvYHoAm7vTXkCR.jpg" width="50%" />
 
@@ -19,7 +19,7 @@ nodes:
     node03:
       ansible_host: 192.168.1.3
 ```
-or [inventories/hosts.example.yml](inventories/hosts.example.yml)
+or [inventories/hosts.example.yml](../inventories/hosts.example.yml)
 
 * This example defines a group called "```nodes```" containing three individual nodes named node01, node02, and node03.
 * Each node entry specifies its hostname (ansible_host) for connection purposes.
@@ -30,7 +30,8 @@ or [inventories/hosts.example.yml](inventories/hosts.example.yml)
 
 #### Overview
 
-Variables are defined in the file [inventories/group_vars/all.yml](inventories/group_vars/all)
+Variables are defined in the file ```inventories/group_vars/all.yml```
+* Use the file [inventories/group_vars/all.example.yml](../inventories/group_vars/all.yml) to create your file ```inventories/group_vars/all.yml```
 * You can change the default user ```ansible_user``` (ubuntu by default)
 * You can change the root path of the Quilibrium node ```node_path```
 * The Quilibrium API ```quilibrium_api_url``` is reachable via the default value ```http://127.0.0.1:8338```. Change it if you change the default port in the ```config.yml``` file.

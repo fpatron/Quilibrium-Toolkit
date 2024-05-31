@@ -1,6 +1,6 @@
 inventories/hosts.yml
 inventories/group_vars/*
-!inventories/group_vars/all.yml
+!inventories/group_vars/all.example.yml
 inventories/host_vars
 vaults/vault.yml
 backup
