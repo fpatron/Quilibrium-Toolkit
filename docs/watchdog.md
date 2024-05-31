@@ -19,15 +19,15 @@ This optional feature provides real-time monitoring of your Quilibrium node and 
 
 * Execute the following command to install the watchdog on the target node:
 ```
-./qtools.sh install_watchdog <target> auto_restart=<auto_restart> telegram_id=<telegram_chat_id> discord_webhook=<discord_webhook> publish_level=<level>
+./qtools.sh install_watchdog <target>
 ```
-Where:
+Add these variables into your var files (see [inventories/group_vars/all.example.yml](../inventories/group_vars/all.example.yml) for an example):
 
-* ```target```: the hostname of the node(s) you want to monitor.
-* ```auto_restart=<auto_restart>```: (optional) set to ```true``` to automatically restart the node on issues, or ```false``` to only receive notifications.
-* ```telegram_id=<telegram_chat_id>```: (optional) your Telegram chat ID (see instructions below).
-* ```discord_webhook=<discord_webhook>```: (optional) your Discord webhook url (see instructions below).
-* ```publish_level=<level>```: (optional) choose ```all``` to receive notifications for all events, or none to disable notifications.
+* ```watchdog_timer```: define period to execute the watchdog in minutes (default is 60)
+* ```watchdog_auto_restart: <auto_restart>```: (optional) set to ```true``` to automatically restart the node on issues, or ```false``` to only receive notifications.
+* ```watchdog_telegram_id: <telegram_chat_id>```: (optional) your Telegram chat ID (see instructions below).
+* ```watchdog_discord_webhook: <discord_webhook>```: (optional) your Discord webhook url (see instructions below).
+* ```watchdog_publish_level: <level>```: (optional) choose ```all``` to receive notifications for all events, or none to disable notifications.
 
 ## Notes about Telegram 
 

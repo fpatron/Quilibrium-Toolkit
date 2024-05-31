@@ -31,7 +31,7 @@ or [inventories/hosts.example.yml](../inventories/hosts.example.yml)
 #### Overview
 
 Variables are defined in the file ```inventories/group_vars/all.yml```
-* Use the file [inventories/group_vars/all.example.yml](../inventories/group_vars/all.yml) to create your file ```inventories/group_vars/all.yml```
+* Use the file [inventories/group_vars/all.example.yml](../inventories/group_vars/all.example.yml) to create your file ```inventories/group_vars/all.yml```
 * You can change the default user ```ansible_user``` (ubuntu by default)
 * You can change the root path of the Quilibrium node ```node_path```
 * The Quilibrium API ```quilibrium_api_url``` is reachable via the default value ```http://127.0.0.1:8338```. Change it if you change the default port in the ```config.yml``` file.

@@ -43,52 +43,47 @@
         dest: "{{ watchdog }}/requirements.txt"
         owner: "{{ ansible_user }}"
 
-   # - name: Create virtual env
-   #   shell: |
-   #     cd {{ watchdog }}
-        #python3 -m venv env
-
     - name: Create python virtual env and install modules
       pip:
         requirements: "{{ watchdog }}/requirements.txt"
         virtualenv: "{{ watchdog }}/myenv"
         virtualenv_command: virtualenv
 
-    - name: Set auto_restart parameter
+    - name: Set watchdog_auto_restart parameter
       ini_file:
         path: "{{ watchdog }}/.env"
         option: AUTO_RESTART
         section: node
-        value: "{{ auto_restart }}"
+        value: "{{ watchdog_auto_restart }}"
         state: present
-      when: auto_restart is defined
+      when: watchdog_auto_restart is defined and watchdog_auto_restart != None
 
-    - name: Set publish_level parameter
+    - name: Set watchdog_publish_level parameter
       ini_file:
         path: "{{ watchdog }}/.env"
         option: PUBLISH_LEVEL
         section: notification
-        value: "{{ publish_level }}"
+        value: "{{ watchdog_publish_level }}"
         state: present
-      when: publish_level is defined
+      when: watchdog_publish_level is defined and watchdog_publish_level != None
 
-    - name: Set telegram_id parameter
+    - name: Set watchdog_telegram_id parameter
       ini_file:
         path: "{{ watchdog }}/.env"
         option: TELEGRAM_USER_ID
         section: notification
-        value: "{{ telegram_id }}"
+        value: "{{ watchdog_telegram_id }}"
         state: present
-      when: telegram_id is defined
+      when: watchdog_telegram_id is defined and watchdog_telegram_id != None
 
-    - name: Set discord_webhook parameter
+    - name: Set watchdog_discord_webhook parameter
       ini_file:
         path: "{{ watchdog }}/.env"
         option: DISCORD_WEBHOOK_URL
         section: notification
-        value: "{{ discord_webhook }}"
+        value: "{{ watchdog_discord_webhook }}"
         state: present
-      when: discord_webhook is defined
+      when: watchdog_discord_webhook is defined and watchdog_discord_webhook != None
 
     - name: Install watchdog service
       become: true
@@ -97,7 +92,7 @@
         Description=Quilibrium watchdog service
         [Service]
         Type=simple
-        RestartSec=3600s
+        RestartSec=600s
         WorkingDirectory={{ watchdog }}
         Environment=GOEXPERIMENT=arenas
         ExecStart={{ watchdog }}/myenv/bin/python3 watchdog.py
@@ -105,11 +100,20 @@
         [Install]
         WantedBy=multi-user.target' > /lib/systemd/system/quilibrium_watchdog.service
 
+        echo '[Unit]
+        Description=Run Quilibrium watchdog service every defined period
+        [Timer]
+        OnUnitActiveSec={{watchdog_timer | default('60')}}min
+        Unit=quilibrium_watchdog.service
+        [Install]
+        WantedBy=timers.target' > /lib/systemd/system/quilibrium_watchdog.timer
+
     - name: Enable watchdog service
       become: true
       shell: |
         systemctl daemon-reload
         systemctl enable quilibrium_watchdog.service
+        systemctl enable quilibrium_watchdog.timer
         systemctl restart quilibrium_watchdog.service
-
+        systemctl start quilibrium_watchdog.timer
     
