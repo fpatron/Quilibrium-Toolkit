@@ -36,6 +36,8 @@ Variables are defined in the file ```inventories/group_vars/all.yml```
 * You can change the root path of the Quilibrium node ```node_path```
 * The Quilibrium API ```quilibrium_api_url``` is reachable via the default value ```http://127.0.0.1:8338```. Change it if you change the default port in the ```config.yml``` file.
 * ```ansible_become_pass``` is linked to your user password to connect as root on your nodes.
+* ```go_max_procs```: indicates how many core you want to use for your nodes.
+* ```dataWorkerMemoryLimit```: indicates how many memory you want to use for your nodes.
 
 * Refer to the Ansible documentation for more information on variables: https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_variables.html
 
