@@ -225,9 +225,13 @@ def get_cpu_usage():
     cpu_usage = psutil.cpu_percent(interval=1)
     physical_cores = psutil.cpu_count(logical=False)
     logical_cores = psutil.cpu_count(logical=True)
+    
     sensors = psutil.sensors_temperatures()
-    core_temperatures= sensors.get('coretemp')[0][1] if sensors is not None and sensors.get('coretemp') is not None else 0
-    return cpu_usage, physical_cores, logical_cores, core_temperatures
+    core_temperature = sensors.get('coretemp')[0][1] if sensors is not None and sensors.get('coretemp') is not None else sensors.get('k10temp')[0][1] if sensors is not None and sensors.get('k10temp') is not None else 0
+    if core_temperature is not None:
+        core_temperature = int(float(core_temperature))
+
+    return cpu_usage, physical_cores, logical_cores, core_temperature
 
 def get_memory_usage():
     memory_info = psutil.virtual_memory()
@@ -275,7 +279,7 @@ def formatDataForDiscord(data):
                     f"- Usage: {format_percentage(cpu['cpu_usage'], 90)}\n"
                     f"- Physical cores: {cpu['physical_cores']}\n"
                     f"- Logical cores: {cpu['logical_cores']}\n"
-                    f"- Temperature: {cpu['core_temperatures']}°C"
+                    f"- Temperature: {cpu['core_temperature']}°C"
                 ),
                 "inline": True
             },
@@ -330,7 +334,7 @@ def formatDataForTelegram(data):
         f"- Usage: {cpu['cpu_usage']}%\n"
         f"- Physical cores: {cpu['physical_cores']}\n"
         f"- Logical cores: {cpu['logical_cores']}\n"
-        f"- Core temperatures: {cpu['core_temperatures']}°C\n\n"
+        f"- Core temperatures: {cpu['core_temperature']}°C\n\n"
         f"*Disk usage:*\n"
         f"- Total disk: {disk['total_disk']:.2f} GB\n"
         f"- Used disk: {disk['used_disk']:.2f} GB\n"
@@ -436,7 +440,7 @@ def main():
     
     info = getNodeInfo()
     total_disk, used_disk, free_disk, percent_disk = get_disk_usage()
-    cpu_usage, physical_cores, logical_cores, core_temperatures = get_cpu_usage()
+    cpu_usage, physical_cores, logical_cores, core_temperature = get_cpu_usage()
     total_memory, available_memory, used_memory, percent_memory = get_memory_usage()
     
     if info is not None:
@@ -446,7 +450,7 @@ def main():
                 "cpu_usage": cpu_usage,
                 "physical_cores": physical_cores, 
                 "logical_cores": logical_cores,
-                "core_temperatures": core_temperatures,
+                "core_temperature": core_temperature,
             },
             "disk": {
                 "total_disk": total_disk,
