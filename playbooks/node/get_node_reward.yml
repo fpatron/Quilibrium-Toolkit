@@ -24,12 +24,12 @@
         state: directory
       delegate_to: localhost
 
-    - name: Print output to file
+    - name: Save output to file
       copy:
         content: |-
           Host;Peer ID;Existing (Jan-May 13);Pre-1.4.18;Post-1.4.18;Total;Disqualified;Criteria
           {% for host in ansible_play_hosts_all %}
-          {{ host }};{{ hostvars[host]['rewards']['stdout_lines'][0] }}
+          {{ host }};{{ hostvars[host]['rewards']['stdout'] if 'rewards' in hostvars[host] else ';;;;;;' }}
           {% endfor %}
         dest: ../../rewards/rewards.csv
       delegate_to: localhost
