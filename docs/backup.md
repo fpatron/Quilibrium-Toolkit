@@ -28,3 +28,21 @@ Where:
 The script stores the backed-up files in a directory named ```./backup``` within your current working directory.
 
 Each node's backup files are placed in a separate subfolder named after the node's hostname, ensuring clear organization and identification.
+
+# Restoring node configuration ```restore_node```
+
+The ```restore_node``` command provides a convenient way to restore local backups of your Quilibrium node configuration files.
+
+### How?
+
+* Execute the following command to restore your backup on your node(s)
+```
+./qtools.sh restore_node <target>
+```
+
+Where:
+* ```<target>```: this specifies the node(s) you want to target. It can be:
+  * ```all```: Applies the action to all nodes defined in your ```inventory``` file.
+  * A group name defined in your inventory (e.g., ```quilibrium```).
+  * The hostname of a specific node (e.g., ```node01```).
+

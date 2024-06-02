@@ -38,6 +38,7 @@ if [ $# -eq 0 ] || [ "$1" == "--help" ] || [ $# -lt 2 ] || [ -z "${command_paths
   echo "  - stop_node: Stops the Quilibrium targets(s)"
   echo "  - restart_node: Restarts the Quilibrium targets(s)"
   echo "  - backup_node: Backup Quilibrium configuration files"
+  echo "  - restore_node: Restore Quilibrium configuration files"
   echo "  - install_node: Install a new Quilibrium node on the specified targets(s)"
   echo "  - upgrade_node: Upgrade Quilibrium node on the specified targets(s)"
   echo "  - setup_node: Configure sysctl and listen port on the specified targets(s)"
