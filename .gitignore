@@ -4,4 +4,5 @@ inventories/group_vars/*
 inventories/host_vars
 vaults/vault.yml
 backup
+rewards
 **/.env

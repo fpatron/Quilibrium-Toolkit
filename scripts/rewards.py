@@ -3,51 +3,46 @@ import json
 import requests
 import argparse
 
-def get_main_js():
-    res = requests.get("https://quilibrium.com/?/rewards")
-    pattern = r"main\.([^.]+)\.js"
-    match = re.search(pattern, res.content.decode('utf-8'))
-    if match is None:
-        return None
-    return f"https://quilibrium.com/static/js/main.{match[1]}.js"
-
-def get_rewards():
-    js = get_main_js()
-    print(f"wget {js}")
-    if js is None:
-        return []
-
-    res = requests.get(js)
-    regex = r"\[\s*\{(?:[^{}]|(?:\{(?:[^{}]|(?:\{[^{}]*\}))*\}))*peerId(?:[^{}]|(?:\{(?:[^{}]|(?:\{[^{}]*\}))*\}))*\}\s*(?:,\s*\{(?:[^{}]|(?:\{(?:[^{}]|(?:\{[^{}]*\}))*\}))*peerId(?:[^{}]|(?:\{(?:[^{}]|(?:\{[^{}]*\}))*\}))*\})*\s*\]"
-    match = re.search(regex, res.text)
-    print(f"match: {not match is None}")
-    if match is None:
-        return []
-
-    data = match.group(0)
-    data = data.replace('!0', '"0"').replace('!1', '"1"')
-    code = re.sub(r'(?<={|,)(\w+):([^,}]+)', r'"\1":\2', data)
-
-    return eval(code)
-
-def main(peer):
-    rewards = {}
-    total_rewards = 0
-    data = get_rewards()
-
+def get_rewards(url, peer_id):
+    response = requests.get(url)
+    data = response.json()
     for item in data:
-        rewards[item["peerId"]] = float(item["reward"])
-        total_rewards += float(item["reward"])
+        if item['peerId'] == peer_id:
+            return float(item['reward'])
+    return 0 
+
+def get_existing_rewards(peer_id):
+    return get_rewards("https://quilibrium.com/rewards/existing.json", peer_id)
+
+def get_pre_rewards(peer_id):
+    return get_rewards("https://quilibrium.com/rewards/pre-1.4.18.json", peer_id)
+
+def get_post_rewards(peer_id):
+    return get_rewards("https://quilibrium.com/rewards/post-1.4.18.json", peer_id)
+
+def get_disqualified(peer_id):
+    response = requests.get("https://quilibrium.com/rewards/disqualified.json")
+    data = response.json()
+    for item in data:
+        if item['peerId'] == peer_id:
+            return item['criteria']
+    return None
     
-    my_rewards = rewards.get(peer, 0)
 
-    result = {
-        'total_users': len(rewards),
-        'total_rewards': total_rewards,
-        'my_rewards': my_rewards
-    }
+def main(peer_id):
+    result = {}
+    
+    disqualified = get_disqualified(peer_id)
+    if (disqualified is not None):
+         result = f"{peer_id};0;0;0;0;true;{disqualified}"
+    else:
+        existing = get_existing_rewards(peer_id)
+        pre_rewards = get_pre_rewards(peer_id)
+        post_rewards = get_post_rewards(peer_id)
+        total = pre_rewards + post_rewards
+        result = f"{peer_id};{str(existing).replace('.',',')};{str(pre_rewards).replace('.',',')};{str(post_rewards).replace('.',',')};{str(total).replace('.',',')};false;"
 
-    print(json.dumps(result))
+    print(result)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Quilibrium rewards")

@@ -18,6 +18,19 @@
       delegate_to: 127.0.0.1
       register: rewards
 
-    - name: Display script output
-      debug:
-        msg: "{{ rewards.stdout_lines[-1:] }}"
+    - name: Creates directory
+      file:
+        path: ../../rewards
+        state: directory
+      delegate_to: localhost
+
+    - name: Print output to file
+      copy:
+        content: |-
+          Host;Peer ID;Existing (Jan-May 13);Pre-1.4.18;Post-1.4.18;Total;Disqualified;Criteria
+          {% for host in ansible_play_hosts_all %}
+          {{ host }};{{ hostvars[host]['rewards']['stdout_lines'][0] }}
+          {% endfor %}
+        dest: ../../rewards/rewards.csv
+      delegate_to: localhost
+      run_once: true
