@@ -68,4 +68,4 @@
 
     - name: Update node configuration
       include_role:
-        name: roles/node/updade_node_configuration
+        name: roles/node/update_node_configuration
