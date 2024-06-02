@@ -6,8 +6,10 @@
       copy:
         src: ../../backup/{{ inventory_hostname }}/config.yml
         dest: "{{ node_path }}/ceremonyclient/node/.config/config.yml"
+        backup: true
 
     - name: Restore keys.yml
       copy:
         src: ../../backup/{{ inventory_hostname }}/keys.yml
         dest: "{{ node_path }}/ceremonyclient/node/.config/keys.yml"
+        backup: true
