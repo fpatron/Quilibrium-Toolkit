@@ -1,0 +1,21 @@
+- name: Install Quilibrium Tool
+  hosts: "{{ target }}"
+
+  tasks:
+    - name: Remove previous script
+      become: true
+      file:
+        path: "usr/local/bin/quil"
+        state: absent  
+
+    - name: Install script
+      become: true
+      copy:
+        src: "../../scripts/quil.sh"
+        dest: "/usr/local/bin/quil"
+        owner: "{{ ansible_user }}"
+
+    - name: chmod
+      become: true
+      shell: |
+        chmod +x /usr/local/bin/quil
