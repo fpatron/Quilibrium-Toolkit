@@ -48,7 +48,6 @@ def restartNode():
         cmd = 'systemctl restart quilibrium'
         result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
         result.check_returncode()
-        publish("Node is DOWN!\nIt has been automatically restarted")
         logger.debug("Node successfully restarted")
     except subprocess.CalledProcessError as e:
         logger.error(f"Failed to restart node: {e}")
@@ -68,6 +67,40 @@ def isNodeRunning():
     except subprocess.CalledProcessError as e:
         logger.error(f"Failed to check node status: {e}")
         return False
+    
+def isNodeVisible():
+    bootstrap_peers = [
+        "EiDpYbDwT2rZq70JNJposqAC+vVZ1t97pcHbK8kr5G4ZNA==",
+        "EiCcVN/KauCidn0nNDbOAGMHRZ5psz/lthpbBeiTAUEfZQ==",
+        "EiDhVHjQKgHfPDXJKWykeUflcXtOv6O2lvjbmUnRrbT2mw==",
+        "EiDHhTNA0yf07ljH+gTn0YEk/edCF70gQqr7QsUr8RKbAA==",
+        "EiAnwhEcyjsHiU6cDCjYJyk/1OVsh6ap7E3vDfJvefGigw==",
+        "EiB75ZnHtAOxajH2hlk9wD1i9zVigrDKKqYcSMXBkKo4SA==",
+        "EiDEYNo7GEfMhPBbUo+zFSGeDECB0RhG0GfAasdWp2TTTQ==",
+        "EiCzMVQnCirB85ITj1x9JOEe4zjNnnFIlxuXj9m6kGq1SQ=="
+    ]
+    
+    try:
+        cmd = 'curl -X POST http://127.0.0.1:8338/quilibrium.node.node.pb.NodeService/GetNetworkInfo'
+        result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+    except subprocess.CalledProcessError as e:
+        logger.error(f"Failed to run curl: {e}")
+        result = ""
+
+    visible = False
+    for peer in bootstrap_peers:
+        peer_id_match = re.search(peer, result.stdout)
+        if peer_id_match:
+            visible = True
+            logger.info(f"You see {peer} as a bootstrap peer")
+        else:
+            logger.warning(f"Peer {peer} not found")
+
+    if visible:
+        logger.info("Great, your node is visible!")
+    else:
+        logger.warning("Sorry, your node is not visible. Please restart your node and try again.")
+    return visible        
     
 def getNodeInfo():
     """
@@ -391,6 +424,13 @@ def main():
     
     if not isNodeRunning():
         logger.warning("Node is not running")
+        publish("Node is DOWN!\nNode is restarting...")
+        restartNode()
+        exit(1)
+    
+    if not isNodeVisible():
+        logger.warning("Node is not running")
+        publish("Node is not visible!\nNode is restarting...")
         restartNode()
         exit(1)
     
@@ -425,6 +465,7 @@ def main():
         if needRestartNode(info):
             logger.warning("Node restart required")
             if (AUTO_RESTART):
+                publish("Restart node automatically due to detected issues!")
                 restartNode()
             else:
                 publish("Node is DOWN!\nA restart is required")
