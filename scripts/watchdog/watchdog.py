@@ -438,43 +438,34 @@ def main():
         restartNode()
         exit(1)
     
-    info = getNodeInfo()
-    total_disk, used_disk, free_disk, percent_disk = get_disk_usage()
-    cpu_usage, physical_cores, logical_cores, core_temperature = get_cpu_usage()
-    total_memory, available_memory, used_memory, percent_memory = get_memory_usage()
+    if PUBLISH_LEVEL == "all":    
+        info = getNodeInfo()
+        total_disk, used_disk, free_disk, percent_disk = get_disk_usage()
+        cpu_usage, physical_cores, logical_cores, core_temperature = get_cpu_usage()
+        total_memory, available_memory, used_memory, percent_memory = get_memory_usage()
     
-    if info is not None:
-        notifyUser({
-            "node": info,
-            "cpu": {
-                "cpu_usage": cpu_usage,
-                "physical_cores": physical_cores, 
-                "logical_cores": logical_cores,
-                "core_temperature": core_temperature,
-            },
-            "disk": {
-                "total_disk": total_disk,
-                "used_disk": used_disk,
-                "free_disk": free_disk,
-                "percent_disk": percent_disk,
-            },
-            "memory": {
-                "total_memory": total_memory,
-                "available_memory": available_memory,
-                "used_memory": used_memory,
-                "percent_memory": percent_memory,
-            }
-        })
-    
-        if needRestartNode(info):
-            logger.warning("Node restart required")
-            if (AUTO_RESTART):
-                publish("Restart node automatically due to detected issues!")
-                restartNode()
-            else:
-                publish("Node is DOWN!\nA restart is required")
-        else:
-            logger.info("Node is running fine")
+        if info is not None:
+            notifyUser({
+                "node": info,
+                "cpu": {
+                    "cpu_usage": cpu_usage,
+                    "physical_cores": physical_cores, 
+                    "logical_cores": logical_cores,
+                    "core_temperature": core_temperature,
+                },
+                "disk": {
+                    "total_disk": total_disk,
+                    "used_disk": used_disk,
+                    "free_disk": free_disk,
+                    "percent_disk": percent_disk,
+                },
+                "memory": {
+                    "total_memory": total_memory,
+                    "available_memory": available_memory,
+                    "used_memory": used_memory,
+                    "percent_memory": percent_memory,
+                }
+            })
 
 if __name__ == "__main__":
     main()
