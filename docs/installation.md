@@ -83,3 +83,47 @@ sudo journalctl -u quilibrium -f
 ### Note
 
 You can install the Quilibrium service individually by using the command `create_service`.
+
+
+
+## Tools Addons
+
+The `install_tools` command install a little tool on the node. 
+
+It will allow you to check some informations directly on the node, and stop, start, restart the node.
+
+To use it on node, simply run the command, no matter what directory you are in:
+
+* Watch the logs :
+```
+quil
+```
+or
+```
+quil journal
+```
+
+* Start the node :
+```
+quil start
+```
+
+* Stop the node :
+```
+quil stop
+```
+
+* Restart the node :
+```
+quil restart
+```
+
+*  View node current frame
+```
+quil frame
+```
+
+* View node difficulty
+```
+quil dif
+```
