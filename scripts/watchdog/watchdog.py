@@ -433,7 +433,7 @@ def main():
         exit(1)
     
     if not isNodeVisible():
-        logger.warning("Node is not running")
+        logger.warning("Node is not visible")
         publish("Node is not visible!\nNode is restarting...")
         restartNode()
         exit(1)
