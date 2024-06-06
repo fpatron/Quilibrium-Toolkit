@@ -24,6 +24,11 @@
         dest: ../../backup/{{ inventory_hostname }}/keys.yml
         flat: true
 
+    - name: Delete zip file on node
+      file:
+        path: "{{ node_path }}/ceremonyclient/node/.config/store.zip"
+        state: absent
+
     - name: Zip store folder
       shell: |
         cd {{ node_path }}/ceremonyclient/node/.config
