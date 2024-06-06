@@ -1,17 +1,22 @@
 - replace:
     path: "{{ node_path }}/ceremonyclient/node/.config/config.yml"
-    regexp: 'statsMultiaddr: ""'
+    regexp: 'statsMultiaddr:.*'
     replace: 'statsMultiaddr: "/dns/stats.quilibrium.com/tcp/443"'
 
 - replace:
     path: "{{ node_path }}/ceremonyclient/node/.config/config.yml"
-    regexp: 'listenGrpcMultiaddr: ""'
-    replace: "listenGrpcMultiaddr: /ip4/127.0.0.1/tcp/8337"
+    regexp: 'listenGrpcMultiaddr:.*'
+    replace: "listenGrpcMultiaddr: /ip4/127.0.0.1/tcp/{{ quilibrium_grpc_port | default(8337) }}"
 
 - replace:
     path: "{{ node_path }}/ceremonyclient/node/.config/config.yml"
-    regexp: 'listenRESTMultiaddr: ""'
-    replace: "listenRESTMultiaddr: /ip4/127.0.0.1/tcp/8338"
+    regexp: 'listenRESTMultiaddr:.*'
+    replace: "listenRESTMultiaddr: /ip4/127.0.0.1/tcp/{{ quilibrium_rest_port | default(8338) }}"
+
+- replace:
+    path: "{{ node_path }}/ceremonyclient/node/.config/config.yml"
+    regexp: 'listenMultiaddr:.*'
+    replace: "listenMultiaddr: /ip4/0.0.0.0/udp/{{ quilibrium_udp_port | default(8336) }}/quic"
 
 - lineinfile:
     path: "{{ node_path }}/ceremonyclient/node/.config/config.yml"

@@ -26,17 +26,22 @@ These parameters adjust the network buffer sizes to potentially improve Quilibri
 ## Quilibrium configuration
 * The script set up the Quilibrium configuration file (```node/.config/config.yml```). It sets the following parameters within the configuration file:
 ```
+listenMultiaddr: /ip4/0.0.0.0/udp/8336/quic
 statsMultiaddr: "/dns/stats.quilibrium.com/tcp/443"
 listenGrpcMultiaddr: /ip4/127.0.0.1/tcp/8337
 listenRESTMultiaddr: /ip4/127.0.0.1/tcp/8338
 ```
+* listenMultiaddr: this parameter defines the peer UDP port
 * statsMultiaddr: this parameter defines the address where the node will send statistics.
 * listenGrpcMultiaddr and listenRESTMultiaddr: these parameters specify the IP addresses and ports on which the node listens for incoming GRPC and REST API connections, respectively.
 
 This configuration is automatically done by the action ```install_node``` or can be done by the action ```setup_node```
 
-* `statsMultiaddr`: This parameter defines the address where the node will send statistics.
-* `listenGrpcMultiaddr` and `listenRESTMultiaddr`: These parameters specify the IP addresses and ports on which the node listens for incoming GRPC and REST API connections, respectively.
+You have the possibility to override the default ports of your hosts using this variables:
+listenMultiaddr: /ip4/0.0.0.0/udp/8336/quic
+* `quilibrium_udp_port`: it will override the default port 8336 for the parameter `listenMultiaddr`
+* `quilibrium_grpc_port`: it will override the default port 8337 for the parameter `listenGrpcMultiaddr`
+* `quilibrium_rest_port`: it will override the default port 8338 for the parameter `listenRESTMultiaddr`
 
 This configuration is automatically done by the action `install_node` or can be done by the action `setup_node`.
 

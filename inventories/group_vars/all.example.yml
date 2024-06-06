@@ -1,7 +1,12 @@
 ansible_user: ubuntu
 node_path: /home/{{ ansible_user }}/quilibrium
 ansible_become_pass: "{{ ansible_password }}"
+
 quilibrium_api_url: "http://127.0.0.1:8338"
+quilibrium_udp_port: 8336
+quilibrium_grpc_port: 8337
+quilibrium_rest_port: 8338
+
 
 go_max_procs: 8
 dataWorkerMemoryLimit: 0
@@ -11,3 +16,10 @@ watchdog_auto_restart: true
 watchdog_publish_level: all
 watchdog_telegram_id:
 watchdog_discord_webhook:
+
+graphana_prometheus_url: 
+graphana_prometheus_username: 
+graphana_prometheus_password: 
+graphana_loki_url: 
+graphana_loki_username: 
+graphana_loki_password:
