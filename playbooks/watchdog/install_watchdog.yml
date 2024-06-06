@@ -11,6 +11,7 @@
       become: true
       apt:
         name: 
+          - curl
           - python3
           - python3-pip
           - python3-virtualenv
