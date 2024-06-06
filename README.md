@@ -74,6 +74,15 @@ stop_node | Stops the Quilibrium node(s) running on the specified target(s)..
 restart_node | Restarts the Quilibrium node(s) on the specified target(s)..
 reboot_node | Reboots the specified target(s)..
 
+### Grafana commands
+
+| Command | Description |
+| ---   | --- |
+install_grafana | Supervise your node(s) with grafana and get all information about it
+
+[See "Supervise your node" guide for more information](docs/grafana.md)
+
+
 ### Watchdog commands
 
 | Command | Description |

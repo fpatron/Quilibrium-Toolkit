@@ -1,0 +1,90 @@
+- name: Setup Grafana Alloy
+  hosts: "{{ target }}"
+
+  tasks:
+    - name: Setup grafana alloy sources
+      become: true
+      shell: |
+        wget -q -O - https://apt.grafana.com/gpg.key | gpg --dearmor | sudo tee /etc/apt/keyrings/grafana.gpg > /dev/null                              
+        echo "deb [signed-by=/etc/apt/keyrings/grafana.gpg] https://apt.grafana.com stable main" | sudo tee /etc/apt/sources.list.d/grafana.list
+
+    - name: Update and upgrade apt packages
+      include_role:
+        name: roles/system/update-os
+
+    - name: Install grafana alloy
+      become: true
+      shell: sudo DEBIAN_FRONTEND=noninteractive apt-get install alloy -y
+
+    - name: Setup agent
+      become: true
+      shell: |
+        echo 'logging {
+                level = "info"
+        }
+
+        prometheus.exporter.unix "localhost" {
+            disable_collectors = [ "arp", "bonding", "btrfs", "conntrack", "drbd", "edac", "fibrechannel", "infiniband", "ipvs", "logind", "mountstats", "nfs", "ntp", "powersupplyclass", "rapl", "schedstat", "softirqs", "tapestats", "textfile", "timex", "zfs" ]
+        }
+
+        discovery.relabel "node_exporter" {
+                targets = prometheus.exporter.unix.localhost.targets
+                rule {
+                        action       = "replace"
+                        target_label = "job"
+                        replacement  = "integrations/quilibrium_exporter"
+                }
+        }
+
+        prometheus.scrape "default" {
+            scrape_interval = "1m"
+            targets    = discovery.relabel.node_exporter.output
+            forward_to = [
+                prometheus.remote_write.grafanacloud.receiver,
+            ]
+        }
+
+        prometheus.remote_write "grafanacloud" {
+          endpoint {
+            url = "{{ graphana_prometheus_url }}"
+
+            basic_auth {
+              username = "{{ graphana_prometheus_username }}"
+              password = "{{ graphana_prometheus_password }}"
+            }
+          }
+        }
+
+        loki.relabel "journal" {
+          forward_to = []
+          rule {
+            source_labels = ["__journal__systemd_unit"]
+            target_label  = "unit"
+          }
+          rule {
+            source_labels = ["__journal__hostname"]
+            target_label  = "hostname"
+          }
+        }
+
+        loki.source.journal "read" {
+            forward_to = [loki.write.grafanacloud.receiver]
+            relabel_rules = loki.relabel.journal.rules
+            matches = "_SYSTEMD_UNIT=quilibrium.service _SYSTEMD_UNIT=quilibrium_watchdog.service"
+        }
+
+        loki.write "grafanacloud" {
+          endpoint {
+            url = "{{ graphana_loki_url }}"
+
+            basic_auth {
+              username = "{{ graphana_loki_username }}"
+              password = "{{ graphana_loki_password }}"
+            }
+          }
+        }' > /etc/alloy/config.alloy
+
+
+    - name: Restart grafana alloy
+      become: true
+      shell: sudo systemctl restart alloy

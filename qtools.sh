@@ -46,6 +46,8 @@ if [ $# -eq 0 ] || [ "$1" == "--help" ] || [ $# -lt 2 ] || [ -z "${command_paths
   echo "  - fastsync_node: Sync your node with the latest snapshot"
   echo "  - reboot_node: Reboot the specified targets(s)"
   echo ""
+  echo "  - install_grafana: Install Grafana Alloy on your node to supervise it (see readme for more details)"
+  echo ""
   echo "  - install_watchdog: Monitor your node and get notify about its status (see readme for more details)"
   echo "  - start_watchdog: Start watchdog service"
   echo "  - stop_watchdog: Stop watchdog service"
