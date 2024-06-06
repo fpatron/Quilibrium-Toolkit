@@ -21,7 +21,12 @@ Where:
 
 * The script retrieves the following critical configuration files from each target node:
   * ```config.yml```: This file stores core configuration settings for your Quilibrium node.
-  * ```keys.yml```: This file contains sensitive security keys used by your node. 
+  * ```keys.yml```: This file contains sensitive security keys used by your node.
+  * ```store```: This folder contains data of your node. By default, backup of this folder is disable. If you want to enable it, add this into your all.yml file:
+  
+```
+backup_store_dir: true
+```
 
 ## Backup location
 

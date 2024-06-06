@@ -2,6 +2,16 @@
   hosts: "{{ target }}"
 
   tasks:
+    - name: Update and upgrade apt packages
+      include_role:
+        name: roles/system/update-os
+    - name: Install required packages
+      become: true
+      apt:
+        name: 
+          - zip
+        state: present
+
     - name: Backup config.yml
       fetch:
         src: "{{ node_path }}/ceremonyclient/node/.config/config.yml"
@@ -13,3 +23,22 @@
         src: "{{ node_path }}/ceremonyclient/node/.config/keys.yml"
         dest: ../../backup/{{ inventory_hostname }}/keys.yml
         flat: true
+
+    - name: Zip store folder
+      shell: |
+        cd {{ node_path }}/ceremonyclient/node/.config
+        zip -r store.zip store
+      when: backup_store_dir is defined and backup_store_dir == True
+
+    - name: Backup store.zip
+      fetch:
+        src: "{{ node_path }}/ceremonyclient/node/.config/store.zip"
+        dest: ../../backup/{{ inventory_hostname }}/store.zip
+        flat: true
+      when: backup_store_dir is defined and backup_store_dir == True
+
+    - name: Delete zip file on node
+      file:
+        path: "{{ node_path }}/ceremonyclient/node/.config/store.zip"
+        state: absent
+      when: backup_store_dir is defined and backup_store_dir == True

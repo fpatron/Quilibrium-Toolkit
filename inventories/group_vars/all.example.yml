@@ -7,6 +7,7 @@ quilibrium_udp_port: 8336
 quilibrium_grpc_port: 8337
 quilibrium_rest_port: 8338
 
+backup_store_dir: False
 
 go_max_procs: 8
 dataWorkerMemoryLimit: 0
