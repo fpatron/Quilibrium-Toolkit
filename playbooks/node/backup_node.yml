@@ -5,12 +5,14 @@
     - name: Update and upgrade apt packages
       include_role:
         name: roles/system/update-os
+      when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
     - name: Install required packages
       become: true
       apt:
         name: 
           - zip
         state: present
+      when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'  
 
     - name: Backup config.yml
       fetch:
