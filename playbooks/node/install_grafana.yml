@@ -87,4 +87,6 @@
 
     - name: Restart grafana alloy
       become: true
-      shell: sudo systemctl restart alloy
+      shell: |
+        sudo systemctl enable alloy
+        sudo systemctl restart alloy
