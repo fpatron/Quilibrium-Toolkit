@@ -2,15 +2,21 @@
   hosts: "{{ target }}"
 
   tasks:
+    - name: Update and upgrade apt packages
+      include_role:
+        name: roles/system/update-os
+    - name: Install required packages
+      become: true
+      apt:
+        name: 
+          - gpg
+        state: present
+
     - name: Setup grafana alloy sources
       become: true
       shell: |
         wget -q -O - https://apt.grafana.com/gpg.key | gpg --dearmor | sudo tee /etc/apt/keyrings/grafana.gpg > /dev/null                              
         echo "deb [signed-by=/etc/apt/keyrings/grafana.gpg] https://apt.grafana.com stable main" | sudo tee /etc/apt/sources.list.d/grafana.list
-
-    - name: Update and upgrade apt packages
-      include_role:
-        name: roles/system/update-os
 
     - name: Install grafana alloy
       become: true
