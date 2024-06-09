@@ -10,7 +10,10 @@
     - name: Install required packages
       become: true
       apt:
-        name: 
+        name:           
+          - python3
+          - python3-pip
+          - python3-virtualenv
           - gpg
         state: present
 
