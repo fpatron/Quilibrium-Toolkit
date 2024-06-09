@@ -1,5 +1,7 @@
 - name: Setup Grafana Alloy
   hosts: "{{ target }}"
+  vars:
+    exporter_dir: "{{ node_path }}/exporter"
 
   tasks:
     - name: Update and upgrade apt packages
@@ -50,6 +52,17 @@
             ]
         }
 
+        prometheus.scrape "quilibrium_exporter" {
+          scrape_interval = "1m"
+          job_name = "quilibrium"
+          targets = [{
+            __address__ = "127.0.0.1:5001",
+          }]    
+          forward_to = [
+              prometheus.remote_write.grafanacloud.receiver,
+          ]
+        }
+
         prometheus.remote_write "grafanacloud" {
           endpoint {
             url = "{{ graphana_prometheus_url }}"
@@ -90,7 +103,58 @@
           }
         }' > /etc/alloy/config.alloy
 
+    - name: Create exporter directory
+      file:
+        path: "{{ exporter_dir }}"
+        state: directory
 
+    - name: Remove previous script
+      file:
+        path: "{{ exporter_dir }}/quilibrium_exporter.py"
+        state: absent
+
+    - name: Remove previous requirements
+      file:
+        path: "{{ exporter_dir }}/requirements.txt"
+        state: absent
+
+    - name: Download quilibrium_exporter.py
+      get_url:
+        url: https://raw.githubusercontent.com/fpatron/Quilibrium-Dashboard/master/grafana/exporter/quilibrium_exporter.py
+        dest: "{{ exporter_dir }}/quilibrium_exporter.py"
+
+    - name: Download requirements.txt
+      get_url:
+        url: https://raw.githubusercontent.com/fpatron/Quilibrium-Dashboard/master/grafana/exporter/requirements.txt
+        dest: "{{ exporter_dir }}/requirements.txt"
+
+    - name: Create python virtual env and install modules
+      pip:
+        requirements: "{{ exporter_dir }}/requirements.txt"
+        virtualenv: "{{ exporter_dir }}/myenv"
+        virtualenv_command: virtualenv
+
+    - name: Install node exporter service
+      become: true
+      shell: |
+        echo '[Unit]
+        Description=Quilibrium node exporter service
+        [Service]
+        Type=simple
+        RestartSec=always
+        WorkingDirectory={{ exporter_dir }}
+        ExecStart={{ exporter_dir }}/myenv/bin/python3 quilibrium_exporter.py
+        User={{ ansible_user }}
+        [Install]
+        WantedBy=multi-user.target' > /lib/systemd/system/quilibrium_exporter.service
+
+    - name: Enable node exporter service
+      become: true
+      shell: |
+        systemctl daemon-reload
+        systemctl enable quilibrium_exporter.service
+        systemctl restart quilibrium_exporter.service
+    
     - name: Restart grafana alloy
       become: true
       shell: |
