@@ -95,7 +95,6 @@
         Type=simple
         RestartSec=600s
         WorkingDirectory={{ watchdog }}
-        Environment=GOEXPERIMENT=arenas
         ExecStart={{ watchdog }}/myenv/bin/python3 watchdog.py
         User={{ ansible_user }}
         [Install]
