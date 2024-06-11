@@ -4,10 +4,9 @@
       - git
       - screen
       - wget
-      - btop
       - cron
       - zip
       - unzip
       - vim
       - nano
-      - iputils-ping
+
