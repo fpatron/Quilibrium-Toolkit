@@ -38,6 +38,7 @@ Variables are defined in the file ```inventories/group_vars/all.yml```
 * ```ansible_become_pass``` is linked to your user password to connect as root on your nodes.
 * ```go_max_procs```: indicates how many core you want to use for your nodes.
 * ```dataWorkerMemoryLimit```: indicates how many memory you want to use for your nodes.
+* ```dataWorkerBaseListenPort```: indicates port of process children.
 
 * Refer to the Ansible documentation for more information on variables: https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_variables.html
 

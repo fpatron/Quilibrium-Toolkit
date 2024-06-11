@@ -23,3 +23,11 @@
     regexp: '^(\s*)dataWorkerMemoryLimit:.*$'
     line: '  dataWorkerMemoryLimit: {{ dataWorkerMemoryLimit }}'
     insertafter: '^engine:$'
+    when: dataWorkerMemoryLimit is defined
+
+- lineinfile:
+    path: "{{ node_path }}/ceremonyclient/node/.config/config.yml"
+    regexp: '^(\s*)dataWorkerBaseListenPort:.*$'
+    line: '  dataWorkerBaseListenPort: {{ dataWorkerBaseListenPort }}'
+    insertafter: '^engine:$'
+    when: dataWorkerBaseListenPort is defined

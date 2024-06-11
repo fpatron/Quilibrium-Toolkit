@@ -11,6 +11,7 @@ backup_store_dir: False
 
 go_max_procs: 8
 dataWorkerMemoryLimit: 0
+dataWorkerBaseListenPort: 40000
 
 watchdog_timer: 60
 watchdog_auto_restart: true
