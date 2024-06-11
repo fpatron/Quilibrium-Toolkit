@@ -17,9 +17,9 @@ https://source.quilibrium.com/quilibrium/ceremonyclient.git
 ## Quick start
 
 * Configure ```inventories/hosts.yml```
-  - More details [here](docs/inventory)
+  - More details [here](docs/inventory.md)
 * Configure ```inventories/group_vars/all.yml```
-  - More details [here](docs/inventory)
+  - More details [here](docs/inventory.md)
 * Launch the toolkit 
   - More details [here](#ssHowToUseIt)
 
