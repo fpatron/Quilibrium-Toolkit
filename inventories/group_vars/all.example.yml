@@ -36,8 +36,6 @@ auto_backup_ftp_host:
 auto_backup_ftp_user:
 auto_backup_ftp_pass:
 
-auto_backup_dropbox_app_key:
-auto_backup_dropbox_app_secret:
 auto_backup_dropbox_token:
 
 auto_backup_onedrive_client_id:

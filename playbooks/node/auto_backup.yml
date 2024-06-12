@@ -43,8 +43,7 @@
         echo '\n' >> $HOME/.config/rclone/rclone.conf
 
         echo "[dropbox]" >> $HOME/.config/rclone/rclone.conf
-        echo "app_key = {{ auto_backup_dropbox_app_key | default('') }}" >> $HOME/.config/rclone/rclone.conf
-        echo "app_secret = {{ auto_backup_dropbox_app_secret | default('') }}" >> $HOME/.config/rclone/rclone.conf
+        echo "type = dropbox" >> $HOME/.config/rclone/rclone.conf
         echo "token = {{ auto_backup_dropbox_token | default('') }}" >> $HOME/.config/rclone/rclone.conf
         echo '\n' >> $HOME/.config/rclone/rclone.conf
 
