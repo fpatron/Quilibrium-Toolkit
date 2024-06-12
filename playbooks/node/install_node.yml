@@ -68,6 +68,11 @@
     - name: Start Quilibrium node
       include_role:
         name: roles/node/start_node
+
+    - name: Pause for 30s
+      pause:
+        seconds: 30
+
     - name: Stop Quilibrium node
       include_role:
         name: roles/node/stop_node
