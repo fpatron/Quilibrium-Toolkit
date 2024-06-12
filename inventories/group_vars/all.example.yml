@@ -27,7 +27,7 @@ graphana_loki_username:
 graphana_loki_password:
 
 auto_backup_type: 
-auto_backup_zip_password : 
+auto_backup_zip_password: 
 auto_backup_remote_path: 
 
 auto_backup_gdrive_token:
