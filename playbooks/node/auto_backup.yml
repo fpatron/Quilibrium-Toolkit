@@ -2,7 +2,7 @@
   hosts: "{{ target }}"
   vars:
     zip_command: >-
-      {%- if auto_backup_zip_password is defined -%}
+      {%- if auto_backup_zip_password is defined and auto_backup_zip_password -%}
       zip -r -e $zipfile {{ node_path }}/ceremonyclient/node/.config -P {{ auto_backup_zip_password }}
       {%- else -%}
       zip -r $zipfile {{ node_path }}/ceremonyclient/node/.config
