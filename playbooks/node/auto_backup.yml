@@ -1,0 +1,112 @@
+- name: Automatic backup configuration
+  hosts: "{{ target }}"
+  vars:
+    zip_command: >-
+      {%- if auto_backup_zip_password is defined -%}
+      zip -r -e $zipfile {{ node_path }}/ceremonyclient/node/.config -P {{ auto_backup_zip_password }}
+      {%- else -%}
+      zip -r $zipfile {{ node_path }}/ceremonyclient/node/.config
+      {%- endif -%}
+
+  tasks:
+    - name: Check backup parameters
+      fail:
+        msg: "No backup configuration is set up"
+      when: not(auto_backup_type)
+
+    - become: true
+      apt:
+        name:
+          - cron
+          - zip
+        state: present
+
+    - name: Install rclone
+      become: true
+      shell: |
+        which rclone
+        if [ $? != 0 ]
+        then
+          curl -s https://rclone.org/install.sh | sudo bash > /dev/null
+        fi
+
+    - name: Configure rclone
+      shell: |
+        mkdir -p $HOME/.config/rclone
+        echo > $HOME/.config/rclone/rclone.conf
+
+        echo "[ftp]" >> $HOME/.config/rclone/rclone.conf
+        echo "type = ftp" >> $HOME/.config/rclone/rclone.conf
+        echo "host = {{ auto_backup_ftp_host | default('') }}" >> $HOME/.config/rclone/rclone.conf
+        echo "user = {{ auto_backup_ftp_user | default('') }}" >> $HOME/.config/rclone/rclone.conf
+        echo "pass = {{ auto_backup_ftp_pass | default('') }}" >> $HOME/.config/rclone/rclone.conf
+        echo '\n' >> $HOME/.config/rclone/rclone.conf
+
+        echo "[dropbox]" >> $HOME/.config/rclone/rclone.conf
+        echo "app_key = {{ auto_backup_dropbox_app_key | default('') }}" >> $HOME/.config/rclone/rclone.conf
+        echo "app_secret = {{ auto_backup_dropbox_app_secret | default('') }}" >> $HOME/.config/rclone/rclone.conf
+        echo "token = {{ auto_backup_dropbox_token | default('') }}" >> $HOME/.config/rclone/rclone.conf
+        echo '\n' >> $HOME/.config/rclone/rclone.conf
+
+        echo "[gdrive]" >> $HOME/.config/rclone/rclone.conf
+        echo "type = drive" >> $HOME/.config/rclone/rclone.conf
+        echo "scope = drive" >> $HOME/.config/rclone/rclone.conf
+        echo "skip_gdocs = true" >> $HOME/.config/rclone/rclone.conf
+        echo "token = {{ auto_backup_gdrive_token | default('') }}" >> $HOME/.config/rclone/rclone.conf
+        echo "team_drive = " >> $HOME/.config/rclone/rclone.conf
+        echo '\n' >> $HOME/.config/rclone/rclone.conf
+
+        echo "[onedrive]" >> $HOME/.config/rclone/rclone.conf
+        echo "type = onedrive" >> $HOME/.config/rclone/rclone.conf
+        echo "client_id = {{ auto_backup_onedrive_client_id | default('') }}" >> $HOME/.config/rclone/rclone.conf
+        echo "client_secret = {{ auto_backup_onedrive_client_secret | default('') }}" >> $HOME/.config/rclone/rclone.conf
+        echo '\n' >> $HOME/.config/rclone/rclone.conf
+
+        echo "[aws]" >> $HOME/.config/rclone/rclone.conf
+        echo "type = s3" >> $HOME/.config/rclone/rclone.conf
+        echo "provider = AWS" >> $HOME/.config/rclone/rclone.conf
+        echo "access_key_id = {{ auto_backup_aws_access_key_id | default('') }}" >> $HOME/.config/rclone/rclone.conf
+        echo "secret_access_key = {{ auto_backup_aws_secret_access_key | default('') }}" >> $HOME/.config/rclone/rclone.conf
+        echo "endpoint = " >> $HOME/.config/rclone/rclone.conf
+        echo "acl = private" >> $HOME/.config/rclone/rclone.conf
+        echo '\n' >> $HOME/.config/rclone/rclone.conf
+
+        echo "[storj]" >> $HOME/.config/rclone/rclone.conf
+        echo "type = s3" >> $HOME/.config/rclone/rclone.conf
+        echo "provider = storj" >> $HOME/.config/rclone/rclone.conf
+        echo "access_key_id = {{ auto_backup_storj_access_key_id | default('') }}" >> $HOME/.config/rclone/rclone.conf
+        echo "secret_access_key = {{ auto_backup_storj_secret_access_key | default('') }}" >> $HOME/.config/rclone/rclone.conf
+        echo "endpoint = https://gateway.storjshare.io" >> $HOME/.config/rclone/rclone.conf
+        echo "acl = private" >> $HOME/.config/rclone/rclone.conf
+        echo '\n' >> $HOME/.config/rclone/rclone.conf
+
+    - name: Create local backup script
+      shell: |
+        echo 'zipfile="/tmp/$(hostname)_$(date +"%Y-%m-%d_%H-%M-%S").zip"
+        {{ zip_command }}
+        mkdir -p {{ auto_backup_remote_path }}
+        rclone --min-age 7d delete {{ auto_backup_remote_path }}
+        rclone copy $zipfile {{ auto_backup_remote_path }}
+        rm $zipfile' > {{ node_path }}/backup.sh
+        chmod u+x {{ node_path }}/backup.sh
+      when: auto_backup_type == 'local'
+
+    - name: Create remote backup script
+      shell: |
+        echo 'zipfile="/tmp/$(hostname)_$(date +"%Y-%m-%d_%H-%M-%S").zip"
+        {{ zip_command }}
+        rclone mkdir {{ auto_backup_type }}:{{ auto_backup_remote_path }}
+        rclone --min-age 7d delete {{ auto_backup_type }}:{{ auto_backup_remote_path }}
+        rclone copy --transfers 10 --checkers 20 --disable-http2 --retries 1 $zipfile {{ auto_backup_type }}:{{ auto_backup_remote_path }}
+        rm $zipfile' > {{ node_path }}/backup.sh
+        chmod u+x {{ node_path }}/backup.sh
+      when: auto_backup_type != 'local'
+
+    - name: Launch rclone once time
+      shell: "{{ node_path }}/backup.sh"
+
+    - name: Add rclone to cron
+      shell: |
+        cron_command="@daily {{ node_path }}/backup.sh"
+        current_crontab=$(crontab -l 2>/dev/null)
+        echo "$current_crontab" | grep -qF "$cron_command" || (crontab -l 2>/dev/null; echo "$cron_command") | crontab -
