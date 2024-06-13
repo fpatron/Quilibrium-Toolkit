@@ -15,6 +15,7 @@
           - python3-pip
           - python3-virtualenv
           - gpg
+          - chrony
         state: present
 
     - name: Setup grafana alloy sources
