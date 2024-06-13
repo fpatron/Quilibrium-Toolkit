@@ -57,8 +57,9 @@
 
         echo "[onedrive]" >> $HOME/.config/rclone/rclone.conf
         echo "type = onedrive" >> $HOME/.config/rclone/rclone.conf
-        echo "client_id = {{ auto_backup_onedrive_client_id | default('') }}" >> $HOME/.config/rclone/rclone.conf
-        echo "client_secret = {{ auto_backup_onedrive_client_secret | default('') }}" >> $HOME/.config/rclone/rclone.conf
+        echo "token = {{ auto_backup_onedrive_token | default('') }}" >> $HOME/.config/rclone/rclone.conf
+        echo "drive_id = {{ auto_backup_onedrive_drive_id | default('') }}" >> $HOME/.config/rclone/rclone.conf
+        echo "drive_type = {{ auto_backup_onedrive_drive_type | default('') }}" >> $HOME/.config/rclone/rclone.conf
         echo '\n' >> $HOME/.config/rclone/rclone.conf
 
         echo "[aws]" >> $HOME/.config/rclone/rclone.conf
