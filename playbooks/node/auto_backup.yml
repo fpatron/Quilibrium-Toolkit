@@ -38,8 +38,9 @@
         echo "[ftp]" >> $HOME/.config/rclone/rclone.conf
         echo "type = ftp" >> $HOME/.config/rclone/rclone.conf
         echo "host = {{ auto_backup_ftp_host | default('') }}" >> $HOME/.config/rclone/rclone.conf
+        echo "port = {{ auto_backup_ftp_port | default(21) }}" >> $HOME/.config/rclone/rclone.conf
         echo "user = {{ auto_backup_ftp_user | default('') }}" >> $HOME/.config/rclone/rclone.conf
-        echo "pass = {{ auto_backup_ftp_pass | default('') }}" >> $HOME/.config/rclone/rclone.conf
+        echo "pass = $(rclone obscure {{ auto_backup_ftp_pass | default('') }})" >> $HOME/.config/rclone/rclone.conf
         echo '\n' >> $HOME/.config/rclone/rclone.conf
 
         echo "[dropbox]" >> $HOME/.config/rclone/rclone.conf
@@ -62,22 +63,9 @@
         echo "drive_type = {{ auto_backup_onedrive_drive_type | default('') }}" >> $HOME/.config/rclone/rclone.conf
         echo '\n' >> $HOME/.config/rclone/rclone.conf
 
-        echo "[aws]" >> $HOME/.config/rclone/rclone.conf
-        echo "type = s3" >> $HOME/.config/rclone/rclone.conf
-        echo "provider = AWS" >> $HOME/.config/rclone/rclone.conf
-        echo "access_key_id = {{ auto_backup_aws_access_key_id | default('') }}" >> $HOME/.config/rclone/rclone.conf
-        echo "secret_access_key = {{ auto_backup_aws_secret_access_key | default('') }}" >> $HOME/.config/rclone/rclone.conf
-        echo "endpoint = " >> $HOME/.config/rclone/rclone.conf
-        echo "acl = private" >> $HOME/.config/rclone/rclone.conf
-        echo '\n' >> $HOME/.config/rclone/rclone.conf
-
         echo "[storj]" >> $HOME/.config/rclone/rclone.conf
-        echo "type = s3" >> $HOME/.config/rclone/rclone.conf
-        echo "provider = storj" >> $HOME/.config/rclone/rclone.conf
-        echo "access_key_id = {{ auto_backup_storj_access_key_id | default('') }}" >> $HOME/.config/rclone/rclone.conf
-        echo "secret_access_key = {{ auto_backup_storj_secret_access_key | default('') }}" >> $HOME/.config/rclone/rclone.conf
-        echo "endpoint = https://gateway.storjshare.io" >> $HOME/.config/rclone/rclone.conf
-        echo "acl = private" >> $HOME/.config/rclone/rclone.conf
+        echo "type = storj" >> $HOME/.config/rclone/rclone.conf
+        echo "access_grant = {{ auto_backup_storj_access_grant | default('') }}" >> $HOME/.config/rclone/rclone.conf
         echo '\n' >> $HOME/.config/rclone/rclone.conf
 
     - name: Create local backup script

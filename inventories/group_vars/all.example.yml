@@ -30,20 +30,17 @@ auto_backup_type:
 auto_backup_zip_password: 
 auto_backup_remote_path: 
 
-auto_backup_gdrive_token:
-
 auto_backup_ftp_host:
+auto_backup_ftp_port:
 auto_backup_ftp_user:
 auto_backup_ftp_pass:
 
+auto_backup_gdrive_token:
 auto_backup_dropbox_token:
+auto_backup_storj_access_grant:
 
 auto_backup_onedrive_token:
 auto_backup_onedrive_drive_id:
 auto_backup_onedrive_drive_type:
 
-auto_backup_aws_access_key_id:
-auto_backup_aws_secret_access_key:
 
-auto_backup_storj_access_key_id:
-auto_backup_storj_secret_access_key:
