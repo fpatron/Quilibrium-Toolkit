@@ -145,7 +145,7 @@
         Description=Quilibrium node exporter service
         [Service]
         Type=simple
-        RestartSec=always
+        RestartSec=10s
         WorkingDirectory={{ exporter_dir }}
         ExecStart={{ exporter_dir }}/myenv/bin/python3 quilibrium_exporter.py
         User={{ ansible_user }}
