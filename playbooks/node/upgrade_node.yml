@@ -37,15 +37,14 @@
             fi
         done
 
-        version=$(cat config/version.go | grep -A 1 "func GetVersion() \[\]byte {" | grep -Eo '0x[0-9a-fA-F]+' | xargs printf "%d.%d.%d")
         if [[ "$OSTYPE" == "linux-gnu"* ]]; then
           if [[ $(uname -m) == "aarch64"* ]]; then
-            file=node-$version-linux-arm64
+            file=$(find . -type f -name "*linux*arm64" | head -n 1)
           else
-            file=node-$version-linux-amd64
+            file=$(find . -type f -name "*linux*amd64" | head -n 1)
           fi
         elif [[ "$OSTYPE" == "darwin"* ]]; then
-          file=node-$version-darwin-arm64
+          file=$(find . -type f -name "*darwin*arm64" | head -n 1)
         else
           return 1
         fi
