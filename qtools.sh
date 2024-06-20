@@ -43,7 +43,6 @@ if [ $# -eq 0 ] || [ "$1" == "--help" ] || [ $# -lt 2 ] || [ -z "${command_paths
   echo "  - upgrade_node: Upgrade Quilibrium node on the specified targets(s)"
   echo "  - setup_node: Configure sysctl and listen port on the specified targets(s)"
   echo "  - create_service: Install your Quilibrium node as a service"
-  echo "  - fastsync_node: Sync your node with the latest snapshot"
   echo "  - reboot_node: Reboot the specified targets(s)"
   echo ""
   echo "  - install_grafana: Install Grafana Alloy on your node to supervise it (see readme for more details)"
