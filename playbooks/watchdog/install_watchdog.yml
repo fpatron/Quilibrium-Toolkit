@@ -91,6 +91,7 @@
       shell: |
         echo '[Unit]
         Description=Quilibrium watchdog service
+        After=network.target
         [Service]
         Type=simple
         RestartSec=600s
@@ -102,6 +103,7 @@
 
         echo '[Unit]
         Description=Run Quilibrium watchdog service every defined period
+        After=network.target
         [Timer]
         OnUnitActiveSec={{watchdog_timer | default('60')}}min
         Unit=quilibrium_watchdog.service

@@ -2,6 +2,7 @@
   shell: |
     echo '[Unit]
     Description=Quilibrium node
+    After=network.target
     [Service]
     Type=simple
     Restart=always

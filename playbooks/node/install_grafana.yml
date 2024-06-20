@@ -143,6 +143,7 @@
       shell: |
         echo '[Unit]
         Description=Quilibrium node exporter service
+        After=network.target
         [Service]
         Type=simple
         RestartSec=10s
