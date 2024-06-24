@@ -86,6 +86,15 @@
         state: present
       when: watchdog_discord_webhook is defined and watchdog_discord_webhook != None
 
+    - name: Set watchdog_restart_on_memory_leak parameter
+      ini_file:
+        path: "{{ watchdog }}/.env"
+        option: RESTART_ON_MEMORY_LEAK
+        section: node
+        value: "{{ watchdog_restart_on_memory_leak }}"
+        state: present
+      when: watchdog_restart_on_memory_leak is defined and watchdog_restart_on_memory_leak != None
+
     - name: Install watchdog service
       become: true
       shell: |
@@ -97,7 +106,6 @@
         RestartSec=600s
         WorkingDirectory={{ watchdog }}
         ExecStart={{ watchdog }}/myenv/bin/python3 watchdog.py
-        User={{ ansible_user }}
         [Install]
         WantedBy=multi-user.target' > /lib/systemd/system/quilibrium_watchdog.service
 

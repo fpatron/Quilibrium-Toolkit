@@ -15,6 +15,7 @@ dataWorkerBaseListenPort: 40000
 
 watchdog_timer: 60
 watchdog_auto_restart: true
+watchdog_restart_on_memory_leak: true
 watchdog_publish_level: all
 watchdog_telegram_id:
 watchdog_discord_webhook:

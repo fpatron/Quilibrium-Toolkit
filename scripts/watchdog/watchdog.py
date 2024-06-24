@@ -12,7 +12,11 @@ from dotenv import load_dotenv # type: ignore
 load_dotenv()
 
 # Restart automatically node
-AUTO_RESTART= os.getenv("AUTO_RESTART", 'False').lower() in ('true', '1', 't') or False
+AUTO_RESTART = os.getenv("AUTO_RESTART", 'False').lower() in ('true', '1', 't') or False
+
+# Restart node on memory leak
+# Works only on 1.4.20
+RESTART_ON_MEMORY_LEAK = os.getenv("RESTART_ON_MEMORY_LEAK", 'False').lower() in ('true', '1', 't') or False
 
 # Notifications
 PUBLISH_LEVEL =  os.getenv("PUBLISH_LEVEL") or os.getenv("TELEGRAM_PUBLISH_LEVEL") or "all"
@@ -45,10 +49,10 @@ def restartNode():
     """
     logger.debug("Restarting node...")
     try:
-        cmd = 'systemctl restart quilibrium'
+        cmd = 'sudo systemctl restart quilibrium'
         result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
         result.check_returncode()
-        logger.debug("Node successfully restarted")
+        logger.info("Node successfully restarted")
     except subprocess.CalledProcessError as e:
         logger.error(f"Failed to restart node: {e}")
         
@@ -67,6 +71,21 @@ def isNodeRunning():
     except subprocess.CalledProcessError as e:
         logger.error(f"Failed to check node status: {e}")
         return False
+    
+def isMemoryLeak(nodeInfo, percent_memory):
+    """
+    Check if there is a memory leak.
+    """
+    if RESTART_ON_MEMORY_LEAK == True and nodeInfo is not None and '1.4.20-p0' in nodeInfo['version']:
+        logger.debug("Checking memory status...")
+        try:
+            if float(percent_memory) >= 95:
+                logger.info(f"Memory leak detected, usage {percent_memory}%")
+                return True 
+        except subprocess.CalledProcessError as e:
+            logger.error(f"Failed to check memory leak: {e}")
+            return False
+    return False    
     
 def isNodeVisible():
     bootstrap_peers = [
@@ -426,27 +445,33 @@ def main():
     logger.info(f"Publish info level is set to: {PUBLISH_LEVEL}")
     logger.info("=================================")
     
+    nodeInfo = getNodeInfo()
+    total_disk, used_disk, free_disk, percent_disk = get_disk_usage()
+    cpu_usage, physical_cores, logical_cores, core_temperature = get_cpu_usage()
+    total_memory, available_memory, used_memory, percent_memory = get_memory_usage()
+    
     if not isNodeRunning():
         logger.warning("Node is not running")
         publish("Node is DOWN!\nNode is restarting...")
         restartNode()
-        exit(1)
+        exit(0)
     
     if not isNodeVisible():
         logger.warning("Node is not visible")
         publish("Node is not visible!\nNode is restarting...")
         restartNode()
-        exit(1)
+        exit(0)
+    
+    if isMemoryLeak(nodeInfo, percent_memory):
+        logger.warning("Memory leak detected")
+        publish("Memory leak detected!\nNode is restarting...")
+        restartNode()
+        exit(0)
     
     if PUBLISH_LEVEL == "all":    
-        info = getNodeInfo()
-        total_disk, used_disk, free_disk, percent_disk = get_disk_usage()
-        cpu_usage, physical_cores, logical_cores, core_temperature = get_cpu_usage()
-        total_memory, available_memory, used_memory, percent_memory = get_memory_usage()
-    
-        if info is not None:
+        if nodeInfo is not None:
             notifyUser({
-                "node": info,
+                "node": nodeInfo,
                 "cpu": {
                     "cpu_usage": cpu_usage,
                     "physical_cores": physical_cores, 
@@ -466,6 +491,7 @@ def main():
                     "percent_memory": percent_memory,
                 }
             })
+    exit(0)
 
 if __name__ == "__main__":
     main()

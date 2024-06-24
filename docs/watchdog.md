@@ -28,6 +28,7 @@ Add these variables into your var files (see [inventories/group_vars/all.example
 * ```watchdog_telegram_id: <telegram_chat_id>```: (optional) your Telegram chat ID (see instructions below).
 * ```watchdog_discord_webhook: <discord_webhook>```: (optional) your Discord webhook url (see instructions below).
 * ```watchdog_publish_level: <level>```: (optional) choose ```all``` to receive notifications for all events, or none to disable notifications.
+* ```watchdog_restart_on_memory_leak: <level>```: (optional) choose ```true``` to restart automatically your node in case of memory leak (only available for version 1.4.20-p0).
 
 ## Notes about Telegram 
 
