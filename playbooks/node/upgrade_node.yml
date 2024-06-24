@@ -21,6 +21,8 @@
       - name: Stop watchdog
         include_role:
           name: roles/watchdog/stop_watchdog
+      ignore_errors: true
+    - block:
       - name: Stop Quilibrium node
         include_role:
           name: roles/node/stop_node

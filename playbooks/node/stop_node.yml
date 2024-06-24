@@ -2,9 +2,12 @@
   hosts: "{{ target }}"
 
   tasks:
+    - block:
+      - name: stop watchdog
+        include_role:
+          name: roles/watchdog/stop_watchdog
+      ignore_errors: true
+
     - name: stop node
       include_role:
         name: roles/node/stop_node
-    - name: stop watchdog
-      include_role:
-        name: roles/watchdog/stop_watchdog
