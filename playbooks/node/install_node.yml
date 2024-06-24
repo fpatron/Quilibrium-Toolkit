@@ -2,6 +2,12 @@
   hosts: "{{ target }}"
 
   tasks:
+    - become: true
+      apt:
+        name:
+          - curl
+        state: present
+
     - name: Check if node already installed
       stat:
         path: "{{ node_path }}"

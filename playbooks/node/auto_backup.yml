@@ -19,6 +19,7 @@
         name:
           - cron
           - zip
+          - curl
         state: present
 
     - name: Install rclone

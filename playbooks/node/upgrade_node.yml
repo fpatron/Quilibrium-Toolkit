@@ -2,6 +2,12 @@
   hosts: "{{ target }}"
 
   tasks:
+    - become: true
+      apt:
+        name:
+          - curl
+        state: present
+
     - name: Check if node is installed
       stat:
         path: "{{ node_path }}/ceremonyclient/node/.config"
