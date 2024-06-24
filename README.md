@@ -89,7 +89,6 @@ install_grafana | Supervise your node(s) with grafana and get all information ab
 install_watchdog | Monitor your node(s) and get notify about its/their status.
 start_watchdog | Start watchdog service on the specified target(s).
 stop_watchdog | Stop watchdog service on the specified target(s).
-restart_watchdog | Restart watchdog service on the specified target(s).
 
 [See "Monitor your node" guide for more information](docs/watchdog.md)
 

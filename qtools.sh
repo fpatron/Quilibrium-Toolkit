@@ -50,7 +50,6 @@ if [ $# -eq 0 ] || [ "$1" == "--help" ] || [ $# -lt 2 ] || [ -z "${command_paths
   echo "  - install_watchdog: Monitor your node and get notify about its status (see readme for more details)"
   echo "  - start_watchdog: Start watchdog service"
   echo "  - stop_watchdog: Stop watchdog service"
-  echo "  - restart_watchdog: Restart watchdog service"
   echo ""
   echo "Example:"
   echo "./qtools.sh start_node node01"

@@ -114,8 +114,6 @@
       become: true
       shell: |
         systemctl daemon-reload
-        systemctl enable quilibrium_watchdog.service
         systemctl enable quilibrium_watchdog.timer
-        systemctl restart quilibrium_watchdog.service
-        systemctl start quilibrium_watchdog.timer
+        systemctl restart quilibrium_watchdog.timer
     

@@ -2,6 +2,9 @@
   hosts: "{{ target }}"
 
   tasks:
-    - name: kill node process
+    - name: stop node
       include_role:
         name: roles/node/stop_node
+    - name: stop watchdog
+      include_role:
+        name: roles/watchdog/stop_watchdog

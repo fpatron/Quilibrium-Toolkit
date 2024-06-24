@@ -1,2 +1,2 @@
 - become: true
-  shell: systemctl start quilibrium_watchdog.service
+  shell: systemctl start quilibrium_watchdog.timer

@@ -12,6 +12,9 @@
       when: not(node_check.stat.exists)
 
     - block:
+      - name: Stop watchdog
+        include_role:
+          name: roles/watchdog/stop_watchdog
       - name: Stop Quilibrium node
         include_role:
           name: roles/node/stop_node
@@ -63,3 +66,9 @@
         include_role:
           name: roles/node/start_node
       ignore_errors: true
+    - block:
+      - name: Start watchdog
+        include_role:
+          name: roles/node/start_watchdog
+      ignore_errors: true
+

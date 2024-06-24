@@ -1,2 +1,2 @@
 - become: true
-  shell: systemctl stop quilibrium_watchdog.service
+  shell: systemctl stop quilibrium_watchdog.timer
