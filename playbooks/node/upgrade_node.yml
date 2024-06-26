@@ -77,6 +77,6 @@
     - block:
       - name: Start watchdog
         include_role:
-          name: roles/node/start_watchdog
+          name: roles/watchdog/start_watchdog
       ignore_errors: true
 
