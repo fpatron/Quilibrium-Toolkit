@@ -7,6 +7,7 @@
         name:
           - curl
         state: present
+      when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'  
 
     - name: Check if node is installed
       stat:
@@ -22,11 +23,18 @@
         include_role:
           name: roles/watchdog/stop_watchdog
       ignore_errors: true
+      when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
     - block:
       - name: Stop Quilibrium node
         include_role:
           name: roles/node/stop_node
       ignore_errors: true
+      when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+    - block:
+      - name:  Stop Quilibrium node
+        shell: pkill node
+      ignore_errors: true
+      when: ansible_distribution == 'MacOSX'
 
     - name: Update Quilibrium node
       shell: |
@@ -74,9 +82,18 @@
         include_role:
           name: roles/node/start_node
       ignore_errors: true
+      when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+    - block:
+      - name:  Start Quilibrium node
+        shell: |
+          cd {{ node_path }}/ceremonyclient/node
+          file=$(find . -type f -name "*darwin*arm64" | head -n 1)
+          screen ./$file &
+      when: ansible_distribution == 'MacOSX'
     - block:
       - name: Start watchdog
         include_role:
           name: roles/watchdog/start_watchdog
       ignore_errors: true
+      when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
