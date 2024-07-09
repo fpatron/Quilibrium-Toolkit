@@ -456,11 +456,11 @@ def main():
         restartNode()
         exit(0)
     
-    if not isNodeVisible():
-        logger.warning("Node is not visible")
-        publish("Node is not visible!\nNode is restarting...")
-        restartNode()
-        exit(0)
+    #if not isNodeVisible():
+    #    logger.warning("Node is not visible")
+    #    publish("Node is not visible!\nNode is restarting...")
+    #    restartNode()
+    #    exit(0)
     
     if isMemoryLeak(nodeInfo, percent_memory):
         logger.warning("Memory leak detected")
