@@ -124,14 +124,10 @@
         state: absent
 
     - name: Download quilibrium_exporter.py
-      get_url:
-        url: https://raw.githubusercontent.com/fpatron/Quilibrium-Dashboard/master/grafana/exporter/quilibrium_exporter.py
-        dest: "{{ exporter_dir }}/quilibrium_exporter.py"
-
-    - name: Download requirements.txt
-      get_url:
-        url: https://raw.githubusercontent.com/fpatron/Quilibrium-Dashboard/master/grafana/exporter/requirements.txt
-        dest: "{{ exporter_dir }}/requirements.txt"
+      shell: |
+         cd {{ exporter_dir }}
+         wget https://raw.githubusercontent.com/fpatron/Quilibrium-Dashboard/master/grafana/exporter/quilibrium_exporter.py
+         wget https://raw.githubusercontent.com/fpatron/Quilibrium-Dashboard/master/grafana/exporter/requirements.txt
 
     - name: Create python virtual env and install modules
       pip:
