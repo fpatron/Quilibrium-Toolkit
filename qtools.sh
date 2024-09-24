@@ -99,4 +99,4 @@ extra_vars=$(echo "$extra_vars" | sed 's/^ *//; s/ *$//')
 playbook_path="playbooks/${command_paths[$1]}"
 
 # Execute playbook
-ansible-playbook -i ${HOSTS_FILE} -e $targets -e @${VAULT_FILE} $extra_vars --ssh-common-args='-o StrictHostKeyChecking=no' --ask-vault-pass -v $playbook_path
+ansible-playbook -i ${HOSTS_FILE} -e $targets -e @${VAULT_FILE} $extra_vars --ssh-common-args='-o StrictHostKeyChecking=no' --ask-vault-pass $playbook_path
