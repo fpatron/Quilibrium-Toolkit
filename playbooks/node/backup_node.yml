@@ -2,56 +2,6 @@
   hosts: "{{ target }}"
 
   tasks:
-    - name: Update and upgrade apt packages
+    - name: backup node
       include_role:
-        name: roles/system/update-os
-      when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
-    - name: Install required packages
-      become: true
-      apt:
-        name: 
-          - zip
-        state: present
-      when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'  
-
-    - name: Backup config.yml
-      fetch:
-        src: "{{ node_path }}/ceremonyclient/node/.config/config.yml"
-        dest: ../../backup/{{ inventory_hostname }}/config.yml
-        flat: true
-
-    - name: Backup keys.yml
-      fetch:
-        src: "{{ node_path }}/ceremonyclient/node/.config/keys.yml"
-        dest: ../../backup/{{ inventory_hostname }}/keys.yml
-        flat: true
-
-    - name: Backup MIGRATIONS
-      fetch:
-        src: "{{ node_path }}/ceremonyclient/node/.config/MIGRATIONS"
-        dest: ../../backup/{{ inventory_hostname }}/MIGRATIONS
-        flat: true
-
-    - name: Delete zip file on node
-      file:
-        path: "{{ node_path }}/ceremonyclient/node/.config/store.zip"
-        state: absent
-
-    - name: Zip store folder
-      shell: |
-        cd {{ node_path }}/ceremonyclient/node/.config
-        zip -r store.zip store
-      when: backup_store_dir is defined and backup_store_dir == True
-
-    - name: Backup store.zip
-      fetch:
-        src: "{{ node_path }}/ceremonyclient/node/.config/store.zip"
-        dest: ../../backup/{{ inventory_hostname }}/store.zip
-        flat: true
-      when: backup_store_dir is defined and backup_store_dir == True
-
-    - name: Delete zip file on node
-      file:
-        path: "{{ node_path }}/ceremonyclient/node/.config/store.zip"
-        state: absent
-      when: backup_store_dir is defined and backup_store_dir == True
+        name: roles/node/backup_node

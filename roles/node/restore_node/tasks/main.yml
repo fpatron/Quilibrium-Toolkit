@@ -1,0 +1,31 @@
+- become: true
+  apt:
+    name: 
+      - unzip
+    state: present
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'  
+
+- local_action: stat path=../../backup/{{ inventory_hostname }}/config.zip
+  register: file
+- copy:
+    src: ../../backup/{{ inventory_hostname }}/config.zip
+    dest: "{{ node_path }}/ceremonyclient/node/config.zip"
+  when: file.stat.exists
+
+- shell: |
+    cd {{ node_path }}/ceremonyclient/node
+    rm -rf .config.ori
+    mv .config .config.ori
+    unzip -o config.zip
+  when: file.stat.exists
+
+- shell: |
+    cd {{ node_path }}/ceremonyclient/node
+    rm -rf .config.ori
+    cd {{ node_path }}/ceremonyclient/node/.config
+    rm -f REPAIR
+
+- file:
+    path: "{{ node_path }}/ceremonyclient/node/config.zip"
+    state: absent
+  when: file.stat.exists

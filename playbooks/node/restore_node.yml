@@ -2,64 +2,6 @@
   hosts: "{{ target }}"
 
   tasks:
-    - name: Update and upgrade apt packages
-      include_role:
-        name: roles/system/update-os
-      when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
-    - name: Install required packages
-      become: true
-      apt:
-        name: 
-          - unzip
-        state: present
-      when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'  
-
-    - name: Check if config.yml file exists
-      local_action: stat path=../../backup/{{ inventory_hostname }}/config.yml
-      register: config_file
-    - name: Restore config.yml
-      copy:
-        src: ../../backup/{{ inventory_hostname }}/config.yml
-        dest: "{{ node_path }}/ceremonyclient/node/.config/config.yml"
-      when: config_file.stat.exists
-
-    - name: Check if keys.yml file exists
-      local_action: stat path=../../backup/{{ inventory_hostname }}/keys.yml
-      register: keys_file
-    - name: Restore keys.yml
-      copy:
-        src: ../../backup/{{ inventory_hostname }}/keys.yml
-        dest: "{{ node_path }}/ceremonyclient/node/.config/keys.yml"
-      when: keys_file.stat.exists
-
-    - name: Check if MIGRATIONS file exists
-      local_action: stat path=../../backup/{{ inventory_hostname }}/MIGRATIONS
-      register: migration_file
-    - name: Restore MIGRATIONS
-      copy:
-        src: ../../backup/{{ inventory_hostname }}/MIGRATIONS
-        dest: "{{ node_path }}/ceremonyclient/node/.config/MIGRATIONS"
-      when: migration_file.stat.exists
-
-    - name: Check if store.zip file exists
-      local_action: stat path=../../backup/{{ inventory_hostname }}/store.zip
-      register: file
-
-    - name: Restore store folder
-      copy:
-        src: ../../backup/{{ inventory_hostname }}/store.zip
-        dest: "{{ node_path }}/ceremonyclient/node/.config/store.zip"
-      when: file.stat.exists
-
-    - name: Zip store folder
-      shell: |
-        cd {{ node_path }}/ceremonyclient/node/.config
-        rm -rf store
-        unzip store.zip
-      when: file.stat.exists
-
-    - name: Delete zip file on node
-      file:
-        path: "{{ node_path }}/ceremonyclient/node/.config/store.zip"
-        state: absent
-      when: file.stat.exists
+  - name: restore node
+    include_role:
+      name: roles/node/restore_node

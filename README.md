@@ -66,12 +66,13 @@ setup_node | Configure sysctl and Quilibrium API (config.yml) on the specified t
 create_service | Install your Quilibrium node as a service (daemon) on the specified target(s).<br>[See install and configure guide](docs/installation.md)
 backup_node | Creates a backup of Quilibrium configuration files on the target node(s) and saves them locally in the ```./backup``` folder.<br>[See backup guide](docs/backup.md)
 restore_node | Restore a backup of Quilibrium configuration files on the target node(s).<br>[See backup guide](docs/backup.md)
-get_node_info | Retrieves information about the Quilibrium node(s), such as its current max_frame, peer id...<br>[See node info guide](docs/info.md)
+get_node_info | Retrieves information about the Quilibrium node(s), such as its current max_frame, peer id..<br>[See node info guide](docs/info.md)
 get_node_reward | Fetches information about the rewards earned by the Quilibrium node(s).<br>[See node info guide](docs/info.md)
-start_node | Starts the Quilibrium node(s) on the specified target(s)..
-stop_node | Stops the Quilibrium node(s) running on the specified target(s)..
-restart_node | Restarts the Quilibrium node(s) on the specified target(s)..
-reboot_node | Reboots the specified target(s)..
+start_node | Starts the Quilibrium node(s) on the specified target(s).
+stop_node | Stops the Quilibrium node(s) running on the specified target(s).
+restart_node | Restarts the Quilibrium node(s) on the specified target(s).
+reboot_node | Reboots the specified target(s).
+swap_nodes | Swap config and store between the specified targets.
 
 ### Grafana commands
 

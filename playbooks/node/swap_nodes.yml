@@ -1,0 +1,96 @@
+- name: Swap Quilibrium nodes configuration
+  hosts: "{{target1}},{{target2}}"
+  
+  tasks:
+
+    - block:
+      - name: stop node1
+        include_role:
+          name: roles/node/stop_node
+        vars:
+          ansible_user: "{{ hostvars[vars['target1']]['ansible_user'] }}"
+          ansible_password: "{{ hostvars[vars['target1']]['ansible_password'] }}"
+          ansible_become_pass: "{{ hostvars[vars['target1']]['ansible_become_pass'] }}"
+      delegate_to: "{{ target1 }}"
+      run_once: true
+    - block:
+      - name: stop node2
+        include_role:
+          name: roles/node/stop_node
+        vars:
+          ansible_user: "{{ hostvars[vars['target2']]['ansible_user'] }}"
+          ansible_password: "{{ hostvars[vars['target2']]['ansible_password'] }}"
+          ansible_become_pass: "{{ hostvars[vars['target2']]['ansible_become_pass'] }}"
+      delegate_to: "{{ target2 }}"
+      run_once: true
+
+    - block:
+      - name: backup node1
+        include_role:
+          name: roles/node/backup_node
+        vars:
+          ansible_user: "{{ hostvars[vars['target1']]['ansible_user'] }}"
+          ansible_password: "{{ hostvars[vars['target1']]['ansible_password'] }}"
+          ansible_become_pass: "{{ hostvars[vars['target1']]['ansible_become_pass'] }}"
+          node_path: "{{ hostvars[vars['target1']]['node_path'] }}"
+          inventory_hostname: "{{ hostvars[vars['target1']]['inventory_hostname'] }}"
+      delegate_to: "{{ target1 }}"
+      run_once: true
+    - block:
+      - name: backup node2
+        include_role:
+          name: roles/node/backup_node
+        vars:
+          ansible_user: "{{ hostvars[vars['target2']]['ansible_user'] }}"
+          ansible_password: "{{ hostvars[vars['target2']]['ansible_password'] }}"
+          ansible_become_pass: "{{ hostvars[vars['target2']]['ansible_become_pass'] }}"
+          node_path: "{{ hostvars[vars['target2']]['node_path'] }}"
+          inventory_hostname: "{{ hostvars[vars['target2']]['inventory_hostname'] }}"
+      delegate_to: "{{ target2 }}"
+      run_once: true
+
+    - block:
+      - name: restore node1
+        include_role:
+          name: roles/node/restore_node
+        vars:
+          ansible_user: "{{ hostvars[vars['target1']]['ansible_user'] }}"
+          ansible_password: "{{ hostvars[vars['target1']]['ansible_password'] }}"
+          ansible_become_pass: "{{ hostvars[vars['target1']]['ansible_become_pass'] }}"
+          node_path: "{{ hostvars[vars['target1']]['node_path'] }}"
+          inventory_hostname: "{{ hostvars[vars['target2']]['inventory_hostname'] }}"
+      delegate_to: "{{ target1 }}"
+      run_once: true
+    - block:
+      - name: restore node2
+        include_role:
+          name: roles/node/restore_node
+        vars:
+          ansible_user: "{{ hostvars[vars['target2']]['ansible_user'] }}"
+          ansible_password: "{{ hostvars[vars['target2']]['ansible_password'] }}"
+          ansible_become_pass: "{{ hostvars[vars['target2']]['ansible_become_pass'] }}"
+          node_path: "{{ hostvars[vars['target2']]['node_path'] }}"
+          inventory_hostname: "{{ hostvars[vars['target1']]['inventory_hostname'] }}"
+      delegate_to: "{{ target2 }}"
+      run_once: true
+
+    - block:
+      - name: start node1
+        include_role:
+          name: roles/node/start_node
+        vars:
+          ansible_user: "{{ hostvars[vars['target1']]['ansible_user'] }}"
+          ansible_password: "{{ hostvars[vars['target1']]['ansible_password'] }}"
+          ansible_become_pass: "{{ hostvars[vars['target1']]['ansible_become_pass'] }}"
+      delegate_to: "{{ target1 }}"
+      run_once: true
+    - block:
+      - name: start node2
+        include_role:
+          name: roles/node/start_node
+        vars:
+          ansible_user: "{{ hostvars[vars['target2']]['ansible_user'] }}"
+          ansible_password: "{{ hostvars[vars['target2']]['ansible_password'] }}"
+          ansible_become_pass: "{{ hostvars[vars['target2']]['ansible_become_pass'] }}"
+      delegate_to: "{{ target2 }}"
+      run_once: true

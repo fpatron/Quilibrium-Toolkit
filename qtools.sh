@@ -32,18 +32,19 @@ if [ $# -eq 0 ] || [ "$1" == "--help" ] || [ $# -lt 2 ] || [ -z "${command_paths
   echo "- <host>: The name of the target host, group, or 'all' to execute the playbook on."
   echo ""
   echo "**Supported commands:**"
-  echo "  - get_node_info: Return information about the Quilibrium targets(s)"
-  echo "  - get_node_reward: Get rewards from targets(s)"
-  echo "  - start_node: Starts the Quilibrium targets(s)"
-  echo "  - stop_node: Stops the Quilibrium targets(s)"
-  echo "  - restart_node: Restarts the Quilibrium targets(s)"
+  echo "  - get_node_info: Return information about the Quilibrium target(s)"
+  echo "  - get_node_reward: Get rewards from target(s)"
+  echo "  - start_node: Starts the Quilibrium target(s)"
+  echo "  - stop_node: Stops the Quilibrium target(s)"
+  echo "  - restart_node: Restarts the Quilibrium target(s)"
   echo "  - backup_node: Backup Quilibrium configuration files"
   echo "  - restore_node: Restore Quilibrium configuration files"
-  echo "  - install_node: Install a new Quilibrium node on the specified targets(s)"
-  echo "  - upgrade_node: Upgrade Quilibrium node on the specified targets(s)"
-  echo "  - setup_node: Configure sysctl and listen port on the specified targets(s)"
+  echo "  - install_node: Install a new Quilibrium node on the specified target(s)"
+  echo "  - upgrade_node: Upgrade Quilibrium node on the specified target(s)"
+  echo "  - setup_node: Configure sysctl and listen port on the specified target(s)"
   echo "  - create_service: Install your Quilibrium node as a service"
-  echo "  - reboot_node: Reboot the specified targets(s)"
+  echo "  - reboot_node: Reboot the specified target(s)"
+  echo "  - swap_nodes: Swap config and store between the specified targets"
   echo ""
   echo "  - install_grafana: Install Grafana Alloy on your node to supervise it (see readme for more details)"
   echo ""
@@ -77,6 +78,13 @@ if [ ! -f "$VAULT_FILE" ]; then
   exit 1
 fi
 
+start=3
+targets="target=$2"
+if [ $1 == 'swap_nodes' ]; then
+  start=4
+  targets="target1=$2 -e target2=$3"
+fi
+
 # Handle extra vars
 extra_vars=""
 for ((i=3; i<=$#; i++)); do
@@ -91,4 +99,4 @@ extra_vars=$(echo "$extra_vars" | sed 's/^ *//; s/ *$//')
 playbook_path="playbooks/${command_paths[$1]}"
 
 # Execute playbook
-ansible-playbook -i ${HOSTS_FILE} -e target=$2 -e @${VAULT_FILE} $extra_vars --ssh-common-args='-o StrictHostKeyChecking=no' --ask-vault-pass $playbook_path
+ansible-playbook -i ${HOSTS_FILE} -e $targets -e @${VAULT_FILE} $extra_vars --ssh-common-args='-o StrictHostKeyChecking=no' --ask-vault-pass -v $playbook_path

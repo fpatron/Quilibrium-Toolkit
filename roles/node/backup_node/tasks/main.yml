@@ -1,0 +1,26 @@
+- become: true
+  apt:
+    name: 
+      - zip
+    state: present
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'  
+
+- file:
+    path: "{{ node_path }}/ceremonyclient/node/config.zip"
+    state: absent
+
+- shell: |
+    cd {{ node_path }}/ceremonyclient/node
+    zip -r config.zip .config
+  when: backup_store_dir is defined and backup_store_dir == True
+
+- fetch:
+    src: "{{ node_path }}/ceremonyclient/node/config.zip"
+    dest: ../../backup/{{ inventory_hostname }}/config.zip
+    flat: true
+  when: backup_store_dir is defined and backup_store_dir == True
+
+- file:
+    path: "{{ node_path }}/ceremonyclient/node/config.zip"
+    state: absent
+  when: backup_store_dir is defined and backup_store_dir == True
