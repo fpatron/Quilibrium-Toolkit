@@ -90,3 +90,9 @@
           file=$(find . -type f -name "*darwin*arm64" | head -n 1)
           screen ./$file &
       when: ansible_distribution == 'MacOSX'
+    - block:
+      - name: Start watchdog
+        include_role:
+          name: roles/watchdog/start_watchdog
+      ignore_errors: true
+      when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
