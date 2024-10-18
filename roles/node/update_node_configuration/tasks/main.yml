@@ -16,7 +16,7 @@
 - replace:
     path: "{{ node_path }}/ceremonyclient/node/.config/config.yml"
     regexp: 'listenMultiaddr:.*'
-    replace: "listenMultiaddr: /ip4/0.0.0.0/udp/{{ quilibrium_udp_port | default(8336) }}/quic"
+    replace: "listenMultiaddr: /ip4/0.0.0.0/udp/{{ quilibrium_udp_port | default(8336) }}/quic-v1"
 
 - lineinfile:
     path: "{{ node_path }}/ceremonyclient/node/.config/config.yml"
