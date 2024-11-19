@@ -3,9 +3,17 @@
   vars:
     zip_command: >-
       {%- if auto_backup_zip_password is defined and auto_backup_zip_password -%}
-      zip -r -e $zipfile {{ node_path }}/ceremonyclient/node/.config -P {{ auto_backup_zip_password }}
+        {%- if auto_backup_keep_store is defined and auto_backup_keep_store == True -%}
+          zip -r -e $zipfile {{ node_path }}/ceremonyclient/node/.config -P {{ auto_backup_zip_password }}
+        {%- else -%}
+          zip -r -e $zipfile {{ node_path }}/ceremonyclient/node/.config -x "{{ node_path }}/ceremonyclient/node/.config/store/*" -P {{ auto_backup_zip_password }}
+        {%- endif -%}
       {%- else -%}
-      zip -r $zipfile {{ node_path }}/ceremonyclient/node/.config
+        {%- if auto_backup_keep_store is defined and auto_backup_keep_store == True -%}
+          zip -r $zipfile {{ node_path }}/ceremonyclient/node/.config
+        {%- else -%}
+          zip -r $zipfile {{ node_path }}/ceremonyclient/node/.config -x "{{ node_path }}/ceremonyclient/node/.config/store/*"
+        {%- endif -%}
       {%- endif -%}
 
   tasks:

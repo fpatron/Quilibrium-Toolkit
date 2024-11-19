@@ -44,4 +44,4 @@ auto_backup_onedrive_token:
 auto_backup_onedrive_drive_id:
 auto_backup_onedrive_drive_type:
 
-
+auto_backup_keep_store: false

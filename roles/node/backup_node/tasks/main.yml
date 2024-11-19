@@ -11,7 +11,7 @@
 
 - shell: |
     cd {{ node_path }}/ceremonyclient/node
-    zip -r config.zip .config
+    zip -r config.zip .config -x ".config/store/*"
   when: backup_store_dir is defined and backup_store_dir == True
 
 - fetch:
